@@ -1,8 +1,11 @@
 .ONESHELL:
-.PHONY: test deps download build clean
+.PHONY: test deps download build clean docker
 
 # mlpack version to use.
 MLPACK_VERSION?=3.3.2
+
+# Go version to use when building Docker image
+GOVERSION?=1.13.1
 
 # Temporary directory to put files into.
 TMP_DIR?=/tmp/
@@ -31,6 +34,10 @@ endif
 # Install all necessary dependencies.
 deps: $(distro_deps)
 
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	brew install cmake curl git unzip openblas armadillo boost
+else
 deps_rh_centos:
 	sudo yum -y install pkgconfig $(RPMS)
 
@@ -40,7 +47,7 @@ deps_fedora:
 deps_debian:
 	sudo apt-get -y update
 	sudo apt-get -y install $(DEBS)
-
+endif
 # Download mlpack source.
 download:
 	rm -rf $(TMP_DIR)mlpack
@@ -84,3 +91,6 @@ sudo_install:
 # Runs tests.
 test:
 	go test -v . ./tests
+
+docker:
+	docker build --build-arg GOVERSION=$(GOVERSION) --build-arg MLPACK_VERSION=$(MLPACK_VERSION) .
