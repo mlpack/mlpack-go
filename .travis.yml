@@ -1,0 +1,14 @@
+sudo: required
+dist: xenial
+
+language: go
+go:
+  - "1.14"
+go_import_path: mlpack.org/v1/mlpack
+
+before_install:
+  - go get -u gonum.org/v1/gonum/...
+  - make deps setup_armadillo download build sudo_install clean
+
+script:
+  - go test -v . ./tests
