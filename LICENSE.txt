@@ -1,3 +1,5 @@
+BSD 3-Clause License
+
 mlpack is provided without any warranty of fitness for any purpose.  You
 can redistribute the library and/or modify it under the terms of the 3-clause
 BSD license.  The text of the 3-clause BSD license is contained below.
