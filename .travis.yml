@@ -1,0 +1,15 @@
+sudo: required
+language: go
+go:
+  - "1.14"
+go_import_path: mlpack.org/v1/mlpack
+
+matrix:
+  - os: linux
+    dist: trusty
+
+  - os: osx
+    osx_image: xcode9.4
+
+before_install:
+  - make install
