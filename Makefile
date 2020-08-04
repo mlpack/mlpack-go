@@ -4,6 +4,9 @@
 # mlpack version to use.
 MLPACK_VERSION?=3.3.2
 
+# armadillo version to use.
+ARMA_VERSION?=8.400.0
+
 # Go version to use when building Docker image
 GOVERSION?=1.13.1
 
@@ -12,9 +15,10 @@ TMP_DIR?=/tmp/
 
 # Package list for each well-known Linux distribution
 RPMS = cmake curl git unzip boost-devel boost-test boost-program-options         \
-       boost-math
+       boost-math armadillo-devel
 DEBS = unzip build-essential cmake curl git pkg-config libboost-math-dev         \
-       libboost-program-options-dev libboost-test-dev libboost-serialization-dev
+       libboost-program-options-dev libboost-test-dev libboost-serialization-dev \
+       libarmadillo-dev
 
 # Detect Linux distribution
 UNAME_S := $(shell uname -s)
@@ -51,6 +55,15 @@ deps_debian:
 	sudo apt-get -y update
 	sudo apt-get -y install $(DEBS)
 
+# Download and install Armadillo.
+setup_armadillo:
+	rm -rf $(TMP_DIR)armadillo
+	mkdir $(TMP_DIR)armadillo
+	cd $(TMP_DIR)armadillo
+	curl https://ftp.fau.de/macports/distfiles/armadillo/armadillo-$(ARMA_VERSION).tar.xz \
+    	| tar -xvJ &&  cd armadillo* && \
+    	cmake . && make && sudo make install && cd ..  && rm -rf armadillo*
+
 # Download mlpack source.
 download:
 	rm -rf $(TMP_DIR)mlpack
@@ -79,11 +92,16 @@ build:
 # Cleanup temporary build files.
 clean:
 	go clean --cache
+	rm -rf $(TMP_DIR)armadillo
 	rm -rf $(TMP_DIR)mlpack
 
 # Do everything.
 install:
-	deps download build sudo_install clean test
+	@make deps 
+ifneq ($(UNAME_S),Darwin) 
+	@make setup_armadillo
+endif 
+	@make download build sudo_install clean test
 
 
 # Install system wide.
