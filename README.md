@@ -21,6 +21,7 @@ auto-generated, and so this repository is not really maintained or monitored.
 
 If you are *looking for the documentation* for the Go bindings, try here:
 
+ * [Go quickstart tutorial](https://www.mlpack.org/doc/mlpack-git/doxygen/go_quickstart.html)
  * [Go binding documentation](https://www.mlpack.org/doc/mlpack-git/go_documentation.html)
 
 If you are *having trouble* or *want to learn more*, try looking in the main
