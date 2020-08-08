@@ -2,7 +2,7 @@
 .PHONY: test deps download build clean docker
 
 # mlpack version to use.
-MLPACK_VERSION?=3.3.2
+MLPACK_VERSION?=3.4.0
 
 # armadillo version to use.
 ARMA_VERSION?=8.400.0
@@ -14,11 +14,9 @@ GOVERSION?=1.13.1
 TMP_DIR?=/tmp/
 
 # Package list for each well-known Linux distribution
-RPMS = cmake curl git unzip boost-devel boost-test boost-program-options         \
-       boost-math armadillo-devel
+RPMS = cmake curl git unzip boost-devel boost-test boost-math armadillo-devel
 DEBS = unzip build-essential cmake curl git pkg-config libboost-math-dev         \
-       libboost-program-options-dev libboost-test-dev libboost-serialization-dev \
-       libarmadillo-dev
+       libboost-test-dev libboost-serialization-dev libarmadillo-dev
 
 # Detect Linux distribution
 UNAME_S := $(shell uname -s)
@@ -57,59 +55,50 @@ deps_debian:
 
 # Download and install Armadillo.
 setup_armadillo:
-	rm -rf $(TMP_DIR)armadillo
-	mkdir $(TMP_DIR)armadillo
-	cd $(TMP_DIR)armadillo
+	rm -rf $(TMP_DIR)armadillo && mkdir $(TMP_DIR)armadillo && cd $(TMP_DIR)armadillo &&  \
 	curl https://ftp.fau.de/macports/distfiles/armadillo/armadillo-$(ARMA_VERSION).tar.xz \
-    	| tar -xvJ &&  cd armadillo* && \
-    	cmake . && make && sudo make install && cd ..  && rm -rf armadillo*
+    	| tar -xvJ &&  cd armadillo* &&                                                   \
+  cmake . && make && sudo make install && cd ..  && rm -rf armadillo*
 
 # Download mlpack source.
 download:
-	rm -rf $(TMP_DIR)mlpack
-	mkdir $(TMP_DIR)mlpack
-	cd $(TMP_DIR)mlpack
-	curl -Lo mlpack.zip https://www.mlpack.org/files/mlpack-$(MLPACK_VERSION).tar.gz
-	tar -xvzpf mlpack.zip
-	rm mlpack.zip
-	cd -
+	rm -rf $(TMP_DIR)mlpack && mkdir $(TMP_DIR)mlpack && cd $(TMP_DIR)mlpack &&           \
+	curl -Lo mlpack.zip https://www.mlpack.org/files/mlpack-$(MLPACK_VERSION).tar.gz &&   \
+	tar -xvzpf mlpack.zip && rm mlpack.zip && cd -
 
 # Build mlpack(go shared libraries).
 build:
-	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION)
-	mkdir build
-	cd build
+	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION) && mkdir build && cd build && \
 	cmake -D BUILD_TESTS=OFF           \
 	      -D BUILD_JULIA_BINDINGS=OFF  \
 	      -D BUILD_PYTHON_BINDINGS=OFF \
 	      -D BUILD_CLI_EXECUTABLES=OFF \
 	      -D BUILD_GO_BINDINGS=OFF     \
-	      -D BUILD_GO_SHLIB=ON  ..
-	$(MAKE) -j $(shell nproc --all)
-	$(MAKE) preinstall
-	cd -
+	      -D BUILD_GO_SHLIB=ON  .. &&  \
+	$(MAKE) -j $(shell nproc --all) && $(MAKE) preinstall && cd -
 
 # Cleanup temporary build files.
 clean:
-	go clean --cache
-	rm -rf $(TMP_DIR)armadillo
-	rm -rf $(TMP_DIR)mlpack
+	go clean --cache && rm -rf $(TMP_DIR)armadillo && rm -rf $(TMP_DIR)mlpack
 
 # Do everything.
 install:
-	@make deps 
-ifneq ($(UNAME_S),Darwin) 
+	@make deps
+ifneq ($(UNAME_S),Darwin)
 	@make setup_armadillo
-endif 
+endif
 	@make download build sudo_install clean test
 
 
 # Install system wide.
 sudo_install:
-	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION)/build
-	sudo $(MAKE) install
-	sudo ldconfig
-	cd -
+	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION)/build && sudo $(MAKE) install && cd -
+ifneq ($(UNAME_S),Darwin)
+	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION)/build && sudo ldconfig && cd -
+else
+	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION)/build && \
+	sudo update_dyld_shared_cache && cd -
+endif
 # Runs tests.
 test:
 	go test -v . ./tests
