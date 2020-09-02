@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KfnOptionalParam struct {
     Algorithm string
@@ -50,28 +46,11 @@ func KfnOptions() *KfnOptionalParam {
   }
 }
 
-type kfnModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *kfnModel) allocKFNModel(identifier string) {
-  m.mem = C.mlpackGetKFNModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *kfnModel) getKFNModel(identifier string) {
-  m.allocKFNModel(identifier)
-}
-
-func setKFNModel(identifier string, ptr *kfnModel) {
-  C.mlpackSetKFNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will calculate the k-furthest-neighbors of a set of points. You
   may specify a separate set of reference points and query points, or just a
   reference set which will be used as both the reference and query set.
-  
+
   For example, the following will calculate the 5 furthest neighbors of
   eachpoint in input and store the distances in distances and the neighbors in
   neighbors: 
@@ -88,7 +67,6 @@ func setKFNModel(identifier string, ptr *kfnModel) {
   is the j'th furthest neighbor from the point in the query set with index i. 
   Row i and column j in the distances output file corresponds to the distance
   between those two points.
-
 
   Input parameters:
 

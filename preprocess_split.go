@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessSplitOptionalParam struct {
     InputLabels *mat.Dense
@@ -43,7 +41,7 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   "InputLabels" parameter.  Splitting labels works the same way as splitting the
   data. The output training and test labels may be saved with the
   "TrainingLabels" and "TestLabels" output parameters, respectively.
-  
+
   So, a simple example where we want to split the dataset X into X_train and
   X_test with 60% of the data in the training set and 40% of the dataset in the
   test set, we could run 
@@ -75,7 +73,6 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   param.TestRatio = 0.3
   
   X_test, y_test, X_train, y_train := mlpack.PreprocessSplit(X, param)
-
 
   Input parameters:
 

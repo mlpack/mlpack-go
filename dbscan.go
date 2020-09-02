@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DbscanOptionalParam struct {
     Epsilon float64
@@ -54,7 +52,7 @@ func DbscanOptions() *DbscanOptionalParam {
   'hilbert-r', 'r-plus', 'r-plus-plus', 'cover', 'ball'. The "SingleMode"
   parameter will force single-tree search (as opposed to the default dual-tree
   search), and '"Naive" will force brute-force range search.
-  
+
   An example usage to run DBSCAN on the dataset in input with a radius of 0.5
   and a minimum cluster size of 5 is given below:
   
@@ -64,7 +62,6 @@ func DbscanOptions() *DbscanOptionalParam {
   param.MinSize = 5
   
   _, _ := mlpack.Dbscan(input, param)
-
 
   Input parameters:
 

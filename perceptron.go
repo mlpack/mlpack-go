@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PerceptronOptionalParam struct {
     InputModel *perceptronModel
@@ -32,23 +28,6 @@ func PerceptronOptions() *PerceptronOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type perceptronModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *perceptronModel) allocPerceptronModel(identifier string) {
-  m.mem = C.mlpackGetPerceptronModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *perceptronModel) getPerceptronModel(identifier string) {
-  m.allocPerceptronModel(identifier)
-}
-
-func setPerceptronModel(identifier string, ptr *perceptronModel) {
-  C.mlpackSetPerceptronModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -71,7 +50,7 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
   Note: the following parameter is deprecated and will be removed in mlpack
   4.0.0: "Output".
   Use "Predictions" instead of "Output".
-  
+
   The training data given with the "Training" option may have class labels as
   its last dimension (so, if the training data is in CSV format, labels should
   be the last column).  Alternately, the "Labels" parameter may be used to
@@ -108,7 +87,6 @@ func setPerceptronModel(identifier string, ptr *perceptronModel) {
   then re-train with a 4-class dataset.  Similarly, attempting classification on
   a 3-dimensional dataset with a perceptron that has been trained on 8
   dimensions will cause an error.
-
 
   Input parameters:
 

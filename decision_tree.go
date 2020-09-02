@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DecisionTreeOptionalParam struct {
     InputModel *decisionTreeModel
@@ -46,23 +42,6 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
   }
 }
 
-type decisionTreeModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *decisionTreeModel) allocDecisionTreeModel(identifier string) {
-  m.mem = C.mlpackGetDecisionTreeModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *decisionTreeModel) getDecisionTreeModel(identifier string) {
-  m.allocDecisionTreeModel(identifier)
-}
-
-func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
-  C.mlpackSetDecisionTreeModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   Train and evaluate using a decision tree.  Given a dataset containing numeric
   or categorical features, and associated labels for each point in the dataset,
@@ -88,7 +67,7 @@ func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
   "TestLabels" parameter.  Predictions for each test point may be saved via the
   "Predictions" output parameter.  Class probabilities for each prediction may
   be saved with the "Probabilities" output parameter.
-  
+
   For example, to train a decision tree with a minimum leaf size of 20 on the
   dataset contained in data with labels labels, saving the output model to tree
   and printing the training error, one could call
@@ -114,7 +93,6 @@ func setDecisionTreeModel(identifier string, ptr *decisionTreeModel) {
   param.TestLabels = test_labels
   
   _, predictions, _ := mlpack.DecisionTree(param)
-
 
   Input parameters:
 

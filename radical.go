@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type RadicalOptionalParam struct {
     Angles int
@@ -45,7 +43,7 @@ func RadicalOptions() *RadicalOptionalParam {
   parameter.  The output matrix Y may be saved with the "OutputIc" output
   parameter, and the output unmixing matrix W may be saved with the
   "OutputUnmixing" output parameter.
-  
+
   For example, to perform ICA on the matrix X with 40 replicates, saving the
   independent components to ic, the following command may be used: 
   
@@ -54,7 +52,6 @@ func RadicalOptions() *RadicalOptionalParam {
   param.Replicates = 40
   
   ic, _ := mlpack.Radical(X, param)
-
 
   Input parameters:
 

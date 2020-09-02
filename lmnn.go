@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LmnnOptionalParam struct {
     BatchSize int
@@ -120,7 +118,7 @@ func LmnnOptions() *LmnnOptionalParam {
   specifying the "Normalize" parameter.
   
   By default, the AMSGrad optimizer is used.
-  
+
   Example - Let's say we want to learn distance on iris dataset with number of
   targets as 3 using BigBatch_SGD optimizer. A simple call for the same will
   look like: 
@@ -143,7 +141,6 @@ func LmnnOptions() *LmnnOptionalParam {
   param.Regularization = 0.4
   
   _, output, _ := mlpack.MlpackLmnn(letter_recognition, param)
-
 
   Input parameters:
 

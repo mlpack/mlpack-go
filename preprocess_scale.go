@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessScaleOptionalParam struct {
     Epsilon float64
@@ -38,23 +34,6 @@ func PreprocessScaleOptions() *PreprocessScaleOptionalParam {
   }
 }
 
-type scalingModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *scalingModel) allocScalingModel(identifier string) {
-  m.mem = C.mlpackGetScalingModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *scalingModel) getScalingModel(identifier string) {
-  m.allocScalingModel(identifier)
-}
-
-func setScalingModel(identifier string, ptr *scalingModel) {
-  C.mlpackSetScalingModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This utility takes a dataset and performs feature scaling using one of the six
   scaler methods namely: 'max_abs_scaler', 'mean_normalization',
@@ -68,7 +47,7 @@ func setScalingModel(identifier string, ptr *scalingModel) {
   
   The model to scale features can be saved using "OutputModel" and later can be
   loaded back using"InputModel".
-  
+
   So, a simple example where we want to scale the dataset X into X_scaled with 
   standard_scaler as scaler_method, we could run 
   
@@ -110,7 +89,6 @@ func setScalingModel(identifier string, ptr *scalingModel) {
   param.MaxValue = 3
   
   X_scaled, _ := mlpack.PreprocessScale(X, param)
-
 
   Input parameters:
 

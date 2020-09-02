@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DecisionStumpOptionalParam struct {
     BucketSize int
@@ -32,23 +28,6 @@ func DecisionStumpOptions() *DecisionStumpOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type dsModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *dsModel) allocDSModel(identifier string) {
-  m.mem = C.mlpackGetDSModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *dsModel) getDSModel(identifier string) {
-  m.allocDSModel(identifier)
-}
-
-func setDSModel(identifier string, ptr *dsModel) {
-  C.mlpackSetDSModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -84,7 +63,6 @@ func setDSModel(identifier string, ptr *dsModel) {
   After training, a decision stump can be saved with the "OutputModel" output
   parameter.  That stump may later be re-used in subsequent calls to this
   program (or others).
-
 
   Input parameters:
 

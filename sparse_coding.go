@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type SparseCodingOptionalParam struct {
     Atoms int
@@ -48,23 +44,6 @@ func SparseCodingOptions() *SparseCodingOptionalParam {
   }
 }
 
-type sparseCoding struct {
-  mem unsafe.Pointer
-}
-
-func (m *sparseCoding) allocSparseCoding(identifier string) {
-  m.mem = C.mlpackGetSparseCodingPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *sparseCoding) getSparseCoding(identifier string) {
-  m.allocSparseCoding(identifier)
-}
-
-func setSparseCoding(identifier string, ptr *sparseCoding) {
-  C.mlpackSetSparseCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   An implementation of Sparse Coding with Dictionary Learning, which achieves
   sparsity via an l1-norm regularizer on the codes (LASSO) or an (l1+l2)-norm
@@ -90,7 +69,7 @@ func setSparseCoding(identifier string, ptr *sparseCoding) {
   "Atoms" parameter).  It is also possible to specify an initial dictionary for
   the optimization, with the "InitialDictionary" parameter.  An input model may
   be specified with the "InputModel" parameter.
-  
+
   As an example, to build a sparse coding model on the dataset data using 200
   atoms and an l1-regularization parameter of 0.1, saving the model into model,
   use 
@@ -112,7 +91,6 @@ func setSparseCoding(identifier string, ptr *sparseCoding) {
   param.Test = otherdata
   
   codes, _, _ := mlpack.SparseCoding(param)
-
 
   Input parameters:
 

@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NmfOptionalParam struct {
     InitialH *mat.Dense
@@ -55,7 +53,7 @@ func NmfOptions() *NmfOptionalParam {
   The maximum number of iterations is specified with "MaxIterations", and the
   minimum residue required for algorithm termination is specified with the
   "MinResidue" parameter.
-  
+
   For example, to run NMF on the input matrix V using the 'multdist' update
   rules with a rank-10 decomposition and storing the decomposed matrices into W
   and H, the following command could be used: 
@@ -65,7 +63,6 @@ func NmfOptions() *NmfOptionalParam {
   param.UpdateRules = "multdist"
   
   H, W := mlpack.Nmf(V, 10, param)
-
 
   Input parameters:
 

@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LinearSvmOptionalParam struct {
     Delta float64
@@ -56,23 +52,6 @@ func LinearSvmOptions() *LinearSvmOptionalParam {
   }
 }
 
-type linearsvmModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *linearsvmModel) allocLinearSVMModel(identifier string) {
-  m.mem = C.mlpackGetLinearSVMModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *linearsvmModel) getLinearSVMModel(identifier string) {
-  m.allocLinearSVMModel(identifier)
-}
-
-func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
-  C.mlpackSetLinearSVMModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   An implementation of linear SVMs that uses either L-BFGS or parallel SGD
   (stochastic gradient descent) to train the model.
@@ -111,7 +90,7 @@ func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
   without the "Training" parameter, so long as an existing linear SVM model is
   given with the "InputModel" parameter.  The output predictions from the linear
   SVM model may be saved with the "Predictions" parameter.
-  
+
   As an example, to train a LinaerSVM on the data 'data' with labels 'labels'
   with L2 regularization of 0.1, saving the model to 'lsvm_model', the following
   command may be used:
@@ -135,7 +114,6 @@ func setLinearSVMModel(identifier string, ptr *linearsvmModel) {
   param.Test = test
   
   _, predictions, _ := mlpack.LinearSvm(param)
-
 
   Input parameters:
 

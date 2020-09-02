@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LarsOptionalParam struct {
     Input *mat.Dense
@@ -36,23 +32,6 @@ func LarsOptions() *LarsOptionalParam {
     UseCholesky: false,
     Verbose: false,
   }
-}
-
-type lars struct {
-  mem unsafe.Pointer
-}
-
-func (m *lars) allocLARS(identifier string) {
-  m.mem = C.mlpackGetLARSPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *lars) getLARS(identifier string) {
-  m.allocLARS(identifier)
-}
-
-func setLARS(identifier string, ptr *lars) {
-  C.mlpackSetLARSPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -92,7 +71,7 @@ func setLARS(identifier string, ptr *lars) {
   trained model or the given input model.  Test points can be specified with the
   "Test" parameter.  Predicted responses to the test points can be saved with
   the "OutputPredictions" output parameter.
-  
+
   For example, the following command trains a model on the data data and
   responses responses with lambda1 set to 0.4 and lambda2 set to 0 (so, LASSO is
   being solved), and then the model is saved to lasso_model:
@@ -115,7 +94,6 @@ func setLARS(identifier string, ptr *lars) {
   param.Test = test
   
   _, test_predictions := mlpack.Lars(param)
-
 
   Input parameters:
 

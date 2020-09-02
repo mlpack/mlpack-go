@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NbcOptionalParam struct {
     IncrementalVariance bool
@@ -32,23 +28,6 @@ func NbcOptions() *NbcOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type nbcModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *nbcModel) allocNBCModel(identifier string) {
-  m.mem = C.mlpackGetNBCModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *nbcModel) getNBCModel(identifier string) {
-  m.allocNBCModel(identifier)
-}
-
-func setNBCModel(identifier string, ptr *nbcModel) {
-  C.mlpackSetNBCModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -76,7 +55,7 @@ func setNBCModel(identifier string, ptr *nbcModel) {
   
   Note: the "Output" and "OutputProbs" parameters are deprecated and will be
   removed in mlpack 4.0.0.  Use "Predictions" and "Probabilities" instead.
-  
+
   For example, to train a Naive Bayes classifier on the dataset data with labels
   labels and save the model to nbc_model, the following command may be used:
   
@@ -96,7 +75,6 @@ func setNBCModel(identifier string, ptr *nbcModel) {
   param.Test = test_set
   
   predictions, _, _, _, _ := mlpack.Nbc(param)
-
 
   Input parameters:
 

@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KmeansOptionalParam struct {
     Algorithm string
@@ -81,7 +79,7 @@ func KmeansOptions() *KmeansOptionalParam {
   Initial clustering assignments may be specified using the "InitialCentroids"
   parameter, and the maximum number of iterations may be specified with the
   "MaxIterations" parameter.
-  
+
   As an example, to use Hamerly's algorithm to perform k-means clustering with
   k=10 on the dataset data, saving the centroids to centroids and the
   assignments for each point to assignments, the following command could be
@@ -102,7 +100,6 @@ func KmeansOptions() *KmeansOptionalParam {
   param.MaxIterations = 500
   
   final, _ := mlpack.Kmeans(data, 10, param)
-
 
   Input parameters:
 

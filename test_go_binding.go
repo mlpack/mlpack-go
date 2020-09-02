@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type TestGoBindingOptionalParam struct {
     BuildModel bool
@@ -48,28 +44,9 @@ func TestGoBindingOptions() *TestGoBindingOptionalParam {
   }
 }
 
-type gaussianKernel struct {
-  mem unsafe.Pointer
-}
-
-func (m *gaussianKernel) allocGaussianKernel(identifier string) {
-  m.mem = C.mlpackGetGaussianKernelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *gaussianKernel) getGaussianKernel(identifier string) {
-  m.allocGaussianKernel(identifier)
-}
-
-func setGaussianKernel(identifier string, ptr *gaussianKernel) {
-  C.mlpackSetGaussianKernelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
-  A simple program to test Golang binding functionality.  You can build mlpack
-  with the BUILD_TESTS option set to off, and this binding will no longer be
-  built.
-
+  A simple program to test Go binding functionality.  You can build mlpack with
+  the BUILD_TESTS option set to off, and this binding will no longer be built.
 
   Input parameters:
 
