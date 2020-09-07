@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessBinarizeOptionalParam struct {
     Dimension int
@@ -35,7 +33,7 @@ func PreprocessBinarizeOptions() *PreprocessBinarizeOptionalParam {
   parameter; the default threshold is 0.0.
   
   The binarized matrix may be saved with the "Output" output parameter.
-  
+
   For example, if we want to set all variables greater than 5 in the dataset X
   to 1 and variables less than or equal to 5.0 to 0, and save the result to Y,
   we could run
@@ -55,7 +53,6 @@ func PreprocessBinarizeOptions() *PreprocessBinarizeOptionalParam {
   param.Dimension = 0
   
   Y := mlpack.PreprocessBinarize(X, param)
-
 
   Input parameters:
 

@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type SoftmaxRegressionOptionalParam struct {
     InputModel *softmaxRegression
@@ -42,23 +38,6 @@ func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
   }
 }
 
-type softmaxRegression struct {
-  mem unsafe.Pointer
-}
-
-func (m *softmaxRegression) allocSoftmaxRegression(identifier string) {
-  m.mem = C.mlpackGetSoftmaxRegressionPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *softmaxRegression) getSoftmaxRegression(identifier string) {
-  m.allocSoftmaxRegression(identifier)
-}
-
-func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
-  C.mlpackSetSoftmaxRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program performs softmax regression, a generalization of logistic
   regression to the multiclass case, and has support for L2 regularization.  The
@@ -84,7 +63,7 @@ func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
   the "Predictions" output parameter.  If labels are specified for the test data
   with the "TestLabels" parameter, then the program will print the accuracy of
   the predictions on the given test set and its corresponding labels.
-  
+
   For example, to train a softmax regression model on the data dataset with
   labels labels with a maximum of 1000 iterations for training, saving the
   trained model to sr_model, the following command can be used: 
@@ -105,7 +84,6 @@ func setSoftmaxRegression(identifier string, ptr *softmaxRegression) {
   param.Test = test_points
   
   _, predictions := mlpack.SoftmaxRegression(param)
-
 
   Input parameters:
 

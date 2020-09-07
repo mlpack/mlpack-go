@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type HoeffdingTreeOptionalParam struct {
     BatchMode bool
@@ -52,23 +48,6 @@ func HoeffdingTreeOptions() *HoeffdingTreeOptionalParam {
   }
 }
 
-type hoeffdingTreeModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *hoeffdingTreeModel) allocHoeffdingTreeModel(identifier string) {
-  m.mem = C.mlpackGetHoeffdingTreeModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *hoeffdingTreeModel) getHoeffdingTreeModel(identifier string) {
-  m.allocHoeffdingTreeModel(identifier)
-}
-
-func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
-  C.mlpackSetHoeffdingTreeModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program implements Hoeffding trees, a form of streaming decision tree
   suited best for large (or streaming) datasets.  This program supports both
@@ -94,7 +73,7 @@ func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
   "TestLabels" parameter.  Predictions for each test point may be saved with the
   "Predictions" output parameter, and class probabilities for each prediction
   may be saved with the "Probabilities" output parameter.
-  
+
   For example, to train a Hoeffding tree with confidence 0.99 with data dataset,
   saving the trained tree to tree, the following command may be used:
   
@@ -115,7 +94,6 @@ func setHoeffdingTreeModel(identifier string, ptr *hoeffdingTreeModel) {
   param.Test = test_set
   
   _, predictions, class_probs := mlpack.HoeffdingTree(param)
-
 
   Input parameters:
 

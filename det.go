@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type DetOptionalParam struct {
     Folds int
@@ -40,23 +36,6 @@ func DetOptions() *DetOptionalParam {
   }
 }
 
-type dTree struct {
-  mem unsafe.Pointer
-}
-
-func (m *dTree) allocDTree(identifier string) {
-  m.mem = C.mlpackGetDTreePtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *dTree) getDTree(identifier string) {
-  m.allocDTree(identifier)
-}
-
-func setDTree(identifier string, ptr *dTree) {
-  C.mlpackSetDTreePtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program performs a number of functions related to Density Estimation
   Trees.  The optimal Density Estimation Tree (DET) can be trained on a set of
@@ -82,7 +61,6 @@ func setDTree(identifier string, ptr *dTree) {
   task will be the tree that was trained on the given training points, or a tree
   given as the parameter "InputModel".  The density estimates for the test
   points may be saved using the "TestSetEstimates" output parameter.
-
 
   Input parameters:
 

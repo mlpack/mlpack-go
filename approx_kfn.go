@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type ApproxKfnOptionalParam struct {
     Algorithm string
@@ -40,23 +36,6 @@ func ApproxKfnOptions() *ApproxKfnOptionalParam {
     Reference: nil,
     Verbose: false,
   }
-}
-
-type approxkfnModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *approxkfnModel) allocApproxKFNModel(identifier string) {
-  m.mem = C.mlpackGetApproxKFNModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *approxkfnModel) getApproxKFNModel(identifier string) {
-  m.allocApproxKFNModel(identifier)
-}
-
-func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
-  C.mlpackSetApproxKFNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -93,7 +72,7 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   Results for each query point can be stored with the "Neighbors" and
   "Distances" output parameters.  Each row of these output matrices holds the k
   distances or neighbor indices for each query point.
-  
+
   For example, to find the 5 approximate furthest neighbors with reference_set
   as the reference set and query_set as the query set using DrusillaSelect,
   storing the furthest neighbor indices to neighbors and the furthest neighbor
@@ -130,7 +109,6 @@ func setApproxKFNModel(identifier string, ptr *approxkfnModel) {
   param.K = 3
   
   _, neighbors, _ := mlpack.ApproxKfn(param)
-
 
   Input parameters:
 

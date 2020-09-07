@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LogisticRegressionOptionalParam struct {
     BatchSize int
@@ -44,23 +40,6 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type logisticRegression struct {
-  mem unsafe.Pointer
-}
-
-func (m *logisticRegression) allocLogisticRegression(identifier string) {
-  m.mem = C.mlpackGetLogisticRegressionPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *logisticRegression) getLogisticRegression(identifier string) {
-  m.allocLogisticRegression(identifier)
-}
-
-func setLogisticRegression(identifier string, ptr *logisticRegression) {
-  C.mlpackSetLogisticRegressionPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -116,7 +95,7 @@ func setLogisticRegression(identifier string, ptr *logisticRegression) {
   This implementation of logistic regression does not support the general
   multi-class case but instead only the two-class case.  Any labels must be
   either 0 or 1.  For more classes, see the softmax_regression program.
-  
+
   As an example, to train a logistic regression model on the data 'data' with
   labels 'labels' with L2 regularization of 0.1, saving the model to 'lr_model',
   the following command may be used:
@@ -138,7 +117,6 @@ func setLogisticRegression(identifier string, ptr *logisticRegression) {
   param.Test = test
   
   predictions, _, _, _, _ := mlpack.LogisticRegression(param)
-
 
   Input parameters:
 

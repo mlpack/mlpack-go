@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type CfOptionalParam struct {
     Algorithm string
@@ -54,23 +50,6 @@ func CfOptions() *CfOptionalParam {
     Training: nil,
     Verbose: false,
   }
-}
-
-type cfModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *cfModel) allocCFModel(identifier string) {
-  m.mem = C.mlpackGetCFModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *cfModel) getCFModel(identifier string) {
-  m.allocCFModel(identifier)
-}
-
-func setCFModel(identifier string, ptr *cfModel) {
-  C.mlpackSetCFModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
 }
 
 /*
@@ -130,7 +109,7 @@ func setCFModel(identifier string, ptr *cfModel) {
    - 'z_score'  -- Z-Score Normalization
   
   A trained model may be saved to with the "OutputModel" output parameter.
-  
+
   To train a CF model on a dataset training_set using NMF for decomposition and
   saving the trained model to model, one could call: 
   
@@ -152,7 +131,6 @@ func setCFModel(identifier string, ptr *cfModel) {
   param.Recommendations = 5
   
   recommendations, _ := mlpack.Cf(param)
-
 
   Input parameters:
 

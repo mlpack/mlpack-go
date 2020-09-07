@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KrannOptionalParam struct {
     Alpha float64
@@ -54,30 +50,13 @@ func KrannOptions() *KrannOptionalParam {
   }
 }
 
-type rannModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *rannModel) allocRANNModel(identifier string) {
-  m.mem = C.mlpackGetRANNModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *rannModel) getRANNModel(identifier string) {
-  m.allocRANNModel(identifier)
-}
-
-func setRANNModel(identifier string, ptr *rannModel) {
-  C.mlpackSetRANNModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will calculate the k rank-approximate-nearest-neighbors of a set
   of points. You may specify a separate set of reference points and query
   points, or just a reference set which will be used as both the reference and
   query set. You must specify the rank approximation (in %) (and optionally the
   success probability).
-  
+
   For example, the following will return 5 neighbors from the top 0.1% of the
   data (with probability 0.95) for each point in input and store the distances
   in distances and the neighbors in neighbors.csv:
@@ -101,7 +80,6 @@ func setRANNModel(identifier string, ptr *rannModel) {
   set which is the i'th nearest neighbor from the point in the query set with
   index j.  Row i and column j in the distances output file corresponds to the
   distance between those two points.
-
 
   Input parameters:
 

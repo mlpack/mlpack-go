@@ -15,8 +15,7 @@ RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends sudo \
     unzip build-essential cmake git pkg-config \
     curl ca-certificates libcurl4-openssl-dev libssl-dev \
-    libboost-math-dev libboost-program-options-dev \
-    libboost-test-dev libboost-serialization-dev libarmadillo-dev && \
+    libboost-math-dev libboost-test-dev libboost-serialization-dev libarmadillo-dev && \
     apt-get clean && rm -rf /usr/share/man/?? && rm -rf /usr/share/man/??_* && \
     rm -rf /var/lib/apt/lists/* && rm -rf /usr/share/locale/* && \
     rm -rf /var/cache/debconf/*-old && rm -rf /usr/share/doc/*

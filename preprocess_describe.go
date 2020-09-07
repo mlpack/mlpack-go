@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type PreprocessDescribeOptionalParam struct {
     Dimension int
@@ -45,7 +43,7 @@ func PreprocessDescribeOptions() *PreprocessDescribeOptionalParam {
   dimension to analyze if there are too many dimensions. The "Population"
   parameter can be specified when the dataset should be considered as a
   population.  Otherwise, the dataset will be considered as a sample.
-  
+
   So, a simple example where we want to print out statistical facts about the
   dataset X using the default settings, we could run 
   
@@ -65,7 +63,6 @@ func PreprocessDescribeOptions() *PreprocessDescribeOptionalParam {
   param.Verbose = true
   
    := mlpack.PreprocessDescribe(X, param)
-
 
   Input parameters:
 

@@ -1,14 +1,23 @@
 sudo: required
-dist: xenial
 
 language: go
 go:
   - "1.14"
 go_import_path: mlpack.org/v1/mlpack
 
-before_install:
-  - go get -u gonum.org/v1/gonum/...
-  - make deps setup_armadillo download build sudo_install clean
+matrix :
+  include :
+    - os : linux
+      dist : xenial
+      before_install:
+        - go get -u gonum.org/v1/gonum/...
+        - make deps setup_armadillo download build sudo_install clean
 
+    - os : osx
+      dist : xcode9.4
+      before_install:
+        - go get -u gonum.org/v1/gonum/...
+        - HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake curl git unzip openblas armadillo boost
+        - make download build sudo_install clean
 script:
   - go test -v . ./tests

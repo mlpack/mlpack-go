@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type EmstOptionalParam struct {
     LeafSize int
@@ -39,7 +37,7 @@ func EmstOptions() *EmstOptionalParam {
   brute-force search is used (this is typically much slower in low dimensions). 
   The leaf size does not affect the results, but it may have some effect on the
   runtime of the algorithm.
-  
+
   For example, the minimum spanning tree of the input dataset data can be
   calculated with a leaf size of 20 and stored as spanning_tree using the
   following command:
@@ -54,7 +52,6 @@ func EmstOptions() *EmstOptionalParam {
   edge.  The first dimension corresponds to the lesser index of the edge; the
   second dimension corresponds to the greater index of the edge; and the third
   column corresponds to the distance between the two points.
-
 
   Input parameters:
 

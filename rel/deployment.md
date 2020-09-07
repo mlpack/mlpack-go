@@ -5,11 +5,15 @@ into an automated script:
 
  1. Check out mlpack code.
  2. Configure and build the `go` target: `make go`
- 3. Copy the complete folder of the Go bindings (`build/src/mlpack/bindings/go/src/mlpack.org/v1/mlpack`)
+ 3. First, remove the previously auto-generated go-bindings from the root of mlpack-go repository.
+```sh
+ rm -r -v !(Makefile|Dockerfile|README.md|LICENSE.txt|rel)
+```
+ 4. Then, copy the complete folder of the Go bindings (`build/src/mlpack/bindings/go/src/mlpack.org/v1/mlpack`)
     to the root of mlpack-go repository.
- 4. Remove all the `.so` files.
+ 5. Remove all the `.so` files.
 ```sh
 rm -f *.so *.so.*
 ```
- 5. Manually change the `PACKAGE_VERSION` in `MAKEFILE`.
- 6. Commit any changed files and any added files in `root` and `capi/` folder of mlpack-go repository.
+ 6. Manually change the `PACKAGE_VERSION` in `MAKEFILE`.
+ 7. Commit any changed files and any added files in `root` and `capi/` folder of mlpack-go repository.

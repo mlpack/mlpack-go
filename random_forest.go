@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type RandomForestOptionalParam struct {
     InputModel *randomForestModel
@@ -48,23 +44,6 @@ func RandomForestOptions() *RandomForestOptionalParam {
   }
 }
 
-type randomForestModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *randomForestModel) allocRandomForestModel(identifier string) {
-  m.mem = C.mlpackGetRandomForestModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *randomForestModel) getRandomForestModel(identifier string) {
-  m.allocRandomForestModel(identifier)
-}
-
-func setRandomForestModel(identifier string, ptr *randomForestModel) {
-  C.mlpackSetRandomForestModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program is an implementation of the standard random forest classification
   algorithm by Leo Breiman.  A random forest can be trained and saved for later
@@ -94,7 +73,7 @@ func setRandomForestModel(identifier string, ptr *randomForestModel) {
   specified with the "TestLabels" parameter.  Predictions for each test point
   may be saved via the "Predictions"output parameter.  Class probabilities for
   each prediction may be saved with the "Probabilities" output parameter.
-  
+
   For example, to train a random forest with a minimum leaf size of 20 using 10
   trees on the dataset contained in datawith labels labels, saving the output
   random forest to rf_model and printing the training error, one could call
@@ -120,7 +99,6 @@ func setRandomForestModel(identifier string, ptr *randomForestModel) {
   param.TestLabels = test_labels
   
   _, predictions, _ := mlpack.RandomForest(param)
-
 
   Input parameters:
 

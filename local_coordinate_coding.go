@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type LocalCoordinateCodingOptionalParam struct {
     Atoms int
@@ -44,23 +40,6 @@ func LocalCoordinateCodingOptions() *LocalCoordinateCodingOptionalParam {
   }
 }
 
-type localCoordinateCoding struct {
-  mem unsafe.Pointer
-}
-
-func (m *localCoordinateCoding) allocLocalCoordinateCoding(identifier string) {
-  m.mem = C.mlpackGetLocalCoordinateCodingPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *localCoordinateCoding) getLocalCoordinateCoding(identifier string) {
-  m.allocLocalCoordinateCoding(identifier)
-}
-
-func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
-  C.mlpackSetLocalCoordinateCodingPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   An implementation of Local Coordinate Coding (LCC), which codes data that
   approximately lives on a manifold using a variation of l1-norm regularized
@@ -81,8 +60,9 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
   To run this program, the input matrix X must be specified (with -i), along
   with the number of atoms in the dictionary (-k).  An initial dictionary may
   also be specified with the "InitialDictionary" parameter.  The l1-norm
-  regularization parameter is specified with the "Lambda" parameter.  For
-  example, to run LCC on the dataset data using 200 atoms and an
+  regularization parameter is specified with the "Lambda" parameter.
+
+  For example, to run LCC on the dataset data using 200 atoms and an
   l1-regularization parameter of 0.1, saving the dictionary "Dictionary" and the
   codes into "Codes", use
   
@@ -109,7 +89,6 @@ func setLocalCoordinateCoding(identifier string, ptr *localCoordinateCoding) {
   param.Test = points
   
   new_codes, _, _ := mlpack.LocalCoordinateCoding(param)
-
 
   Input parameters:
 

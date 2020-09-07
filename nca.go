@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type NcaOptionalParam struct {
     ArmijoConstant float64
@@ -103,7 +101,6 @@ func NcaOptions() *NcaOptionalParam {
   lbfgs.hpp) or the vast set of published literature on L-BFGS.
   
   By default, the SGD optimizer is used.
-
 
   Input parameters:
 

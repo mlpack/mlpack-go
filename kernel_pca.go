@@ -8,9 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type KernelPcaOptionalParam struct {
     Bandwidth float64
@@ -46,14 +44,6 @@ func KernelPcaOptions() *KernelPcaOptionalParam {
   
   For the case where a linear kernel is used, this reduces to regular PCA.
   
-  For example, the following command will perform KPCA on the dataset input
-  using the Gaussian kernel, and saving the transformed data to transformed: 
-  
-  // Initialize optional parameters for KernelPca().
-  param := mlpack.KernelPcaOptions()
-  
-  transformed := mlpack.KernelPca(input, "gaussian", param)
-  
   The kernels that are supported are listed below:
   
    * 'linear': the standard linear dot product (same as normal PCA):
@@ -88,6 +78,13 @@ func KernelPcaOptions() *KernelPcaOptionalParam {
   "Sampling" parameter is used.  The sampling scheme for the Nystroem method can
   be chosen from the following list: 'kmeans', 'random', 'ordered'.
 
+  For example, the following command will perform KPCA on the dataset input
+  using the Gaussian kernel, and saving the transformed data to transformed: 
+  
+  // Initialize optional parameters for KernelPca().
+  param := mlpack.KernelPcaOptions()
+  
+  transformed := mlpack.KernelPca(input, "gaussian", param)
 
   Input parameters:
 

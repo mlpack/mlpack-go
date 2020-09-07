@@ -8,11 +8,7 @@ package mlpack
 */
 import "C" 
 
-import (
-  "gonum.org/v1/gonum/mat" 
-  "runtime" 
-  "unsafe" 
-)
+import "gonum.org/v1/gonum/mat" 
 
 type FastmksOptionalParam struct {
     Bandwidth float64
@@ -48,30 +44,13 @@ func FastmksOptions() *FastmksOptionalParam {
   }
 }
 
-type fastmksModel struct {
-  mem unsafe.Pointer
-}
-
-func (m *fastmksModel) allocFastMKSModel(identifier string) {
-  m.mem = C.mlpackGetFastMKSModelPtr(C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *fastmksModel) getFastMKSModel(identifier string) {
-  m.allocFastMKSModel(identifier)
-}
-
-func setFastMKSModel(identifier string, ptr *fastmksModel) {
-  C.mlpackSetFastMKSModelPtr(C.CString(identifier), (unsafe.Pointer)(ptr.mem))
-}
-
 /*
   This program will find the k maximum kernels of a set of points, using a query
   set and a reference set (which can optionally be the same set). More
   specifically, for each point in the query set, the k points in the reference
   set with maximum kernel evaluations are found.  The kernel function used is
   specified with the "Kernel" parameter.
-  
+
   For example, the following command will calculate, for each point in the query
   set query, the five points in the reference set reference with maximum kernel
   evaluation using the linear kernel.  The kernel evaluations may be saved with
@@ -95,7 +74,6 @@ func setFastMKSModel(identifier string, ptr *fastmksModel) {
   
   This program performs FastMKS using a cover tree.  The base used to build the
   cover tree can be specified with the "Base" parameter.
-
 
   Input parameters:
 
