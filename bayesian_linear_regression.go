@@ -83,8 +83,8 @@ func BayesianLinearRegressionOptions() *BayesianLinearRegressionOptionalParam {
   
   _, test_predictions, _ := mlpack.BayesianLinearRegression(param)
   
-  Because the estimator computes a predictive distribution instead of simple
-  point estimate, the "Stds" parameter allows to save the prediction
+  Because the estimator computes a predictive distribution instead of a simple
+  point estimate, the "Stds" parameter allows one to save the prediction
   uncertainties: 
   
   // Initialize optional parameters for BayesianLinearRegression().
