@@ -114,81 +114,79 @@ func PreprocessScaleOptions() *PreprocessScaleOptionalParam {
 
  */
 func PreprocessScale(input *mat.Dense, param *PreprocessScaleOptionalParam) (*mat.Dense, scalingModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("preprocess_scale")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Scale Data")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Epsilon != 1e-06 {
-    setParamDouble("epsilon", param.Epsilon)
-    setPassed("epsilon")
+    setParamDouble(params, "epsilon", param.Epsilon)
+    setPassed(params, "epsilon")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setScalingModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setScalingModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InverseScaling != false {
-    setParamBool("inverse_scaling", param.InverseScaling)
-    setPassed("inverse_scaling")
+    setParamBool(params, "inverse_scaling", param.InverseScaling)
+    setPassed(params, "inverse_scaling")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxValue != 1 {
-    setParamInt("max_value", param.MaxValue)
-    setPassed("max_value")
+    setParamInt(params, "max_value", param.MaxValue)
+    setPassed(params, "max_value")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinValue != 0 {
-    setParamInt("min_value", param.MinValue)
-    setPassed("min_value")
+    setParamInt(params, "min_value", param.MinValue)
+    setPassed(params, "min_value")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ScalerMethod != "standard_scaler" {
-    setParamString("scaler_method", param.ScalerMethod)
-    setPassed("scaler_method")
+    setParamString(params, "scaler_method", param.ScalerMethod)
+    setPassed(params, "scaler_method")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
+  setPassed(params, "output")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackPreprocessScale()
+  C.mlpackPreprocessScale(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat(params, "output")
   var outputModel scalingModel
-  outputModel.getScalingModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getScalingModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, outputModel
 }

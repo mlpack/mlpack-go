@@ -139,92 +139,90 @@ func ApproxKfnOptions() *ApproxKfnOptionalParam {
 
  */
 func ApproxKfn(param *ApproxKfnOptionalParam) (*mat.Dense, *mat.Dense, approxkfnModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("approx_kfn")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Approximate furthest neighbor search")
-
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "ds" {
-    setParamString("algorithm", param.Algorithm)
-    setPassed("algorithm")
+    setParamString(params, "algorithm", param.Algorithm)
+    setPassed(params, "algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.CalculateError != false {
-    setParamBool("calculate_error", param.CalculateError)
-    setPassed("calculate_error")
+    setParamBool(params, "calculate_error", param.CalculateError)
+    setPassed(params, "calculate_error")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ExactDistances != nil {
-    gonumToArmaMat("exact_distances", param.ExactDistances)
-    setPassed("exact_distances")
+    gonumToArmaMat(params, "exact_distances", param.ExactDistances)
+    setPassed(params, "exact_distances")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setApproxKFNModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setApproxKFNModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumProjections != 5 {
-    setParamInt("num_projections", param.NumProjections)
-    setPassed("num_projections")
+    setParamInt(params, "num_projections", param.NumProjections)
+    setPassed(params, "num_projections")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumTables != 5 {
-    setParamInt("num_tables", param.NumTables)
-    setPassed("num_tables")
+    setParamInt(params, "num_tables", param.NumTables)
+    setPassed(params, "num_tables")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("distances")
-  setPassed("neighbors")
-  setPassed("output_model")
+  setPassed(params, "distances")
+  setPassed(params, "neighbors")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackApproxKfn()
+  C.mlpackApproxKfn(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat(params, "distances")
   var neighborsPtr mlpackArma
-  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  neighbors := neighborsPtr.armaToGonumUmat(params, "neighbors")
   var outputModel approxkfnModel
-  outputModel.getApproxKFNModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getApproxKFNModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return distances, neighbors, outputModel
 }

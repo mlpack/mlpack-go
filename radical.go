@@ -78,75 +78,73 @@ func RadicalOptions() *RadicalOptionalParam {
 
  */
 func Radical(input *mat.Dense, param *RadicalOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("radical")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("RADICAL")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Angles != 150 {
-    setParamInt("angles", param.Angles)
-    setPassed("angles")
+    setParamInt(params, "angles", param.Angles)
+    setPassed(params, "angles")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NoiseStdDev != 0.175 {
-    setParamDouble("noise_std_dev", param.NoiseStdDev)
-    setPassed("noise_std_dev")
+    setParamDouble(params, "noise_std_dev", param.NoiseStdDev)
+    setPassed(params, "noise_std_dev")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Objective != false {
-    setParamBool("objective", param.Objective)
-    setPassed("objective")
+    setParamBool(params, "objective", param.Objective)
+    setPassed(params, "objective")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Replicates != 30 {
-    setParamInt("replicates", param.Replicates)
-    setPassed("replicates")
+    setParamInt(params, "replicates", param.Replicates)
+    setPassed(params, "replicates")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Sweeps != 0 {
-    setParamInt("sweeps", param.Sweeps)
-    setPassed("sweeps")
+    setParamInt(params, "sweeps", param.Sweeps)
+    setPassed(params, "sweeps")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_ic")
-  setPassed("output_unmixing")
+  setPassed(params, "output_ic")
+  setPassed(params, "output_unmixing")
 
   // Call the mlpack program.
-  C.mlpackRadical()
+  C.mlpackRadical(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputIcPtr mlpackArma
-  outputIc := outputIcPtr.armaToGonumMat("output_ic")
+  outputIc := outputIcPtr.armaToGonumMat(params, "output_ic")
   var outputUnmixingPtr mlpackArma
-  outputUnmixing := outputUnmixingPtr.armaToGonumMat("output_unmixing")
-
-  // Clear settings.
-  clearSettings()
-
+  outputUnmixing := outputUnmixingPtr.armaToGonumMat(params, "output_unmixing")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputIc, outputUnmixing
 }

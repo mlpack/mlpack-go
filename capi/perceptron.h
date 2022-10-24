@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackPerceptron();
+extern void mlpackPerceptron(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a PerceptronModel parameter.
-extern void mlpackSetPerceptronModelPtr(const char* identifier, void* value);
+extern void mlpackSetPerceptronModelPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a PerceptronModel parameter.
-extern void* mlpackGetPerceptronModelPtr(const char* identifier);
+extern void* mlpackGetPerceptronModelPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

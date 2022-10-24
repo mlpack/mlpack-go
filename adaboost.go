@@ -111,83 +111,81 @@ func AdaboostOptions() *AdaboostOptionalParam {
 
  */
 func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("adaboost")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("AdaBoost")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setAdaBoostModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setAdaBoostModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Iterations != 1000 {
-    setParamInt("iterations", param.Iterations)
-    setPassed("iterations")
+    setParamInt(params, "iterations", param.Iterations)
+    setPassed(params, "iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
   if param.WeakLearner != "decision_stump" {
-    setParamString("weak_learner", param.WeakLearner)
-    setPassed("weak_learner")
+    setParamString(params, "weak_learner", param.WeakLearner)
+    setPassed(params, "weak_learner")
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackAdaboost()
+  C.mlpackAdaboost(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow("output")
+  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel adaBoostModel
-  outputModel.getAdaBoostModel("output_model")
+  outputModel.getAdaBoostModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, outputModel, predictions, probabilities
 }

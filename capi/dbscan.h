@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-extern void mlpackDbscan();
+extern void mlpackDbscan(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.

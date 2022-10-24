@@ -89,75 +89,73 @@ func DbscanOptions() *DbscanOptionalParam {
 
  */
 func Dbscan(input *mat.Dense, param *DbscanOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("dbscan")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("DBSCAN clustering")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Epsilon != 1 {
-    setParamDouble("epsilon", param.Epsilon)
-    setPassed("epsilon")
+    setParamDouble(params, "epsilon", param.Epsilon)
+    setPassed(params, "epsilon")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinSize != 5 {
-    setParamInt("min_size", param.MinSize)
-    setPassed("min_size")
+    setParamInt(params, "min_size", param.MinSize)
+    setPassed(params, "min_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Naive != false {
-    setParamBool("naive", param.Naive)
-    setPassed("naive")
+    setParamBool(params, "naive", param.Naive)
+    setPassed(params, "naive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SelectionType != "ordered" {
-    setParamString("selection_type", param.SelectionType)
-    setPassed("selection_type")
+    setParamString(params, "selection_type", param.SelectionType)
+    setPassed(params, "selection_type")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SingleMode != false {
-    setParamBool("single_mode", param.SingleMode)
-    setPassed("single_mode")
+    setParamBool(params, "single_mode", param.SingleMode)
+    setPassed(params, "single_mode")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TreeType != "kd" {
-    setParamString("tree_type", param.TreeType)
-    setPassed("tree_type")
+    setParamString(params, "tree_type", param.TreeType)
+    setPassed(params, "tree_type")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("assignments")
-  setPassed("centroids")
+  setPassed(params, "assignments")
+  setPassed(params, "centroids")
 
   // Call the mlpack program.
-  C.mlpackDbscan()
+  C.mlpackDbscan(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var assignmentsPtr mlpackArma
-  assignments := assignmentsPtr.armaToGonumUrow("assignments")
+  assignments := assignmentsPtr.armaToGonumUrow(params, "assignments")
   var centroidsPtr mlpackArma
-  centroids := centroidsPtr.armaToGonumMat("centroids")
-
-  // Clear settings.
-  clearSettings()
-
+  centroids := centroidsPtr.armaToGonumMat(params, "centroids")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return assignments, centroids
 }

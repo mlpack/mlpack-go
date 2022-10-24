@@ -119,74 +119,72 @@ func BayesianLinearRegressionOptions() *BayesianLinearRegressionOptionalParam {
 
  */
 func BayesianLinearRegression(param *BayesianLinearRegressionOptionalParam) (bayesianLinearRegression, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("bayesian_linear_regression")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("BayesianLinearRegression")
-
   // Detect if the parameter was passed; set if so.
   if param.Center != false {
-    setParamBool("center", param.Center)
-    setPassed("center")
+    setParamBool(params, "center", param.Center)
+    setPassed(params, "center")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Input != nil {
-    gonumToArmaMat("input", param.Input)
-    setPassed("input")
+    gonumToArmaMat(params, "input", param.Input)
+    setPassed(params, "input")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setBayesianLinearRegression("input_model", param.InputModel)
-    setPassed("input_model")
+    setBayesianLinearRegression(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Responses != nil {
-    gonumToArmaRow("responses", param.Responses)
-    setPassed("responses")
+    gonumToArmaRow(params, "responses", param.Responses)
+    setPassed(params, "responses")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Scale != false {
-    setParamBool("scale", param.Scale)
-    setPassed("scale")
+    setParamBool(params, "scale", param.Scale)
+    setPassed(params, "scale")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("stds")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "stds")
 
   // Call the mlpack program.
-  C.mlpackBayesianLinearRegression()
+  C.mlpackBayesianLinearRegression(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel bayesianLinearRegression
-  outputModel.getBayesianLinearRegression("output_model")
+  outputModel.getBayesianLinearRegression(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumMat("predictions")
+  predictions := predictionsPtr.armaToGonumMat(params, "predictions")
   var stdsPtr mlpackArma
-  stds := stdsPtr.armaToGonumMat("stds")
-
-  // Clear settings.
-  clearSettings()
-
+  stds := stdsPtr.armaToGonumMat(params, "stds")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions, stds
 }

@@ -173,131 +173,129 @@ func CfOptions() *CfOptionalParam {
 
  */
 func Cf(param *CfOptionalParam) (*mat.Dense, cfModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("cf")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Collaborative Filtering")
-
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "NMF" {
-    setParamString("algorithm", param.Algorithm)
-    setPassed("algorithm")
+    setParamString(params, "algorithm", param.Algorithm)
+    setPassed(params, "algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.AllUserRecommendations != false {
-    setParamBool("all_user_recommendations", param.AllUserRecommendations)
-    setPassed("all_user_recommendations")
+    setParamBool(params, "all_user_recommendations", param.AllUserRecommendations)
+    setPassed(params, "all_user_recommendations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setCFModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setCFModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Interpolation != "average" {
-    setParamString("interpolation", param.Interpolation)
-    setPassed("interpolation")
+    setParamString(params, "interpolation", param.Interpolation)
+    setPassed(params, "interpolation")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.IterationOnlyTermination != false {
-    setParamBool("iteration_only_termination", param.IterationOnlyTermination)
-    setPassed("iteration_only_termination")
+    setParamBool(params, "iteration_only_termination", param.IterationOnlyTermination)
+    setPassed(params, "iteration_only_termination")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 1000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinResidue != 1e-05 {
-    setParamDouble("min_residue", param.MinResidue)
-    setPassed("min_residue")
+    setParamDouble(params, "min_residue", param.MinResidue)
+    setPassed(params, "min_residue")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NeighborSearch != "euclidean" {
-    setParamString("neighbor_search", param.NeighborSearch)
-    setPassed("neighbor_search")
+    setParamString(params, "neighbor_search", param.NeighborSearch)
+    setPassed(params, "neighbor_search")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Neighborhood != 5 {
-    setParamInt("neighborhood", param.Neighborhood)
-    setPassed("neighborhood")
+    setParamInt(params, "neighborhood", param.Neighborhood)
+    setPassed(params, "neighborhood")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Normalization != "none" {
-    setParamString("normalization", param.Normalization)
-    setPassed("normalization")
+    setParamString(params, "normalization", param.Normalization)
+    setPassed(params, "normalization")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaUmat("query", param.Query)
-    setPassed("query")
+    gonumToArmaUmat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Rank != 0 {
-    setParamInt("rank", param.Rank)
-    setPassed("rank")
+    setParamInt(params, "rank", param.Rank)
+    setPassed(params, "rank")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Recommendations != 5 {
-    setParamInt("recommendations", param.Recommendations)
-    setPassed("recommendations")
+    setParamInt(params, "recommendations", param.Recommendations)
+    setPassed(params, "recommendations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
+  setPassed(params, "output")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackCf()
+  C.mlpackCf(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUmat("output")
+  output := outputPtr.armaToGonumUmat(params, "output")
   var outputModel cfModel
-  outputModel.getCFModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getCFModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, outputModel
 }

@@ -73,7 +73,7 @@ func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
   param.Training = dataset
   param.Labels = labels
   
-  sr_model, _ := mlpack.SoftmaxRegression(param)
+  sr_model, _, _ := mlpack.SoftmaxRegression(param)
   
   Then, to use sr_model to classify the test points in test_points, saving the
   output predictions to predictions, the following command can be used:
@@ -83,7 +83,7 @@ func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
   param.InputModel = &sr_model
   param.Test = test_points
   
-  _, predictions := mlpack.SoftmaxRegression(param)
+  _, predictions, _ := mlpack.SoftmaxRegression(param)
 
   Input parameters:
 
@@ -111,92 +111,95 @@ func SoftmaxRegressionOptions() *SoftmaxRegressionOptionalParam {
         regression model to.
    - predictions (mat.Dense): Matrix to save predictions for test dataset
         into.
+   - probabilities (mat.Dense): Matrix to save class probabilities for
+        test dataset into.
 
  */
-func SoftmaxRegression(param *SoftmaxRegressionOptionalParam) (softmaxRegression, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+func SoftmaxRegression(param *SoftmaxRegressionOptionalParam) (softmaxRegression, *mat.Dense, *mat.Dense) {
+  params := getParams("softmax_regression")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Softmax Regression")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setSoftmaxRegression("input_model", param.InputModel)
-    setPassed("input_model")
+    setSoftmaxRegression(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda != 0.0001 {
-    setParamDouble("lambda", param.Lambda)
-    setPassed("lambda")
+    setParamDouble(params, "lambda", param.Lambda)
+    setPassed(params, "lambda")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 400 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NoIntercept != false {
-    setParamBool("no_intercept", param.NoIntercept)
-    setPassed("no_intercept")
+    setParamBool(params, "no_intercept", param.NoIntercept)
+    setPassed(params, "no_intercept")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumberOfClasses != 0 {
-    setParamInt("number_of_classes", param.NumberOfClasses)
-    setPassed("number_of_classes")
+    setParamInt(params, "number_of_classes", param.NumberOfClasses)
+    setPassed(params, "number_of_classes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestLabels != nil {
-    gonumToArmaUrow("test_labels", param.TestLabels)
-    setPassed("test_labels")
+    gonumToArmaUrow(params, "test_labels", param.TestLabels)
+    setPassed(params, "test_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackSoftmaxRegression()
+  C.mlpackSoftmaxRegression(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel softmaxRegression
-  outputModel.getSoftmaxRegression("output_model")
+  outputModel.getSoftmaxRegression(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
-
-  // Clear settings.
-  clearSettings()
-
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
+  var probabilitiesPtr mlpackArma
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
-  return outputModel, predictions
+  return outputModel, predictions, probabilities
 }

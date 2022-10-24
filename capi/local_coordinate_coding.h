@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackLocalCoordinateCoding();
+extern void mlpackLocalCoordinateCoding(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a LocalCoordinateCoding parameter.
-extern void mlpackSetLocalCoordinateCodingPtr(const char* identifier, void* value);
+extern void mlpackSetLocalCoordinateCodingPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a LocalCoordinateCoding parameter.
-extern void* mlpackGetLocalCoordinateCodingPtr(const char* identifier);
+extern void* mlpackGetLocalCoordinateCodingPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

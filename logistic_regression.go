@@ -47,9 +47,9 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   L-BFGS optimizer or SGD (stochastic gradient descent).  This solves the
   regression problem
   
-    y = (1 / 1 + e^-(X * b))
+    y = (1 / 1 + e^-(X * b)).
   
-  where y takes values 0 or 1.
+  In this setting, y corresponds to class labels and X corresponds to data.
   
   This program allows loading a logistic regression model (via the "InputModel"
   parameter) or training a logistic regression model given training data
@@ -87,14 +87,9 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   model is given with the "InputModel" parameter.  The output predictions from
   the logistic regression model may be saved with the "Predictions" parameter.
   
-  Note : The following parameters are deprecated and will be removed in mlpack
-  4: "Output", "OutputProbabilities"
-  Use "Predictions" instead of "Output"
-  Use "Probabilities" instead of "OutputProbabilities"
-  
   This implementation of logistic regression does not support the general
   multi-class case but instead only the two-class case.  Any labels must be
-  either 0 or 1.  For more classes, see the softmax_regression program.
+  either 0 or 1.  For more classes, see the softmax regression implementation.
 
   As an example, to train a logistic regression model on the data 'data' with
   labels 'labels' with L2 regularization of 0.1, saving the model to 'lr_model',
@@ -106,7 +101,7 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   param.Labels = labels
   param.Lambda = 0.1
   
-  _, lr_model, _, _, _ := mlpack.LogisticRegression(param)
+  lr_model, _, _ := mlpack.LogisticRegression(param)
   
   Then, to use that model to predict classes for the dataset 'test', storing the
   output predictions in 'predictions', the following command may be used: 
@@ -116,7 +111,7 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   param.InputModel = &lr_model
   param.Test = test
   
-  predictions, _, _, _, _ := mlpack.LogisticRegression(param)
+  _, predictions, _ := mlpack.LogisticRegression(param)
 
   Input parameters:
 
@@ -145,123 +140,111 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
 
   Output parameters:
 
-   - output (mat.Dense): If test data is specified, this matrix is where
-        the predictions for the test set will be saved.
    - outputModel (logisticRegression): Output for trained logistic
         regression model.
-   - outputProbabilities (mat.Dense): If test data is specified, this
-        matrix is where the class probabilities for the test set will be saved.
    - predictions (mat.Dense): If test data is specified, this matrix is
         where the predictions for the test set will be saved.
    - probabilities (mat.Dense): If test data is specified, this matrix is
         where the class probabilities for the test set will be saved.
 
  */
-func LogisticRegression(param *LogisticRegressionOptionalParam) (*mat.Dense, logisticRegression, *mat.Dense, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+func LogisticRegression(param *LogisticRegressionOptionalParam) (logisticRegression, *mat.Dense, *mat.Dense) {
+  params := getParams("logistic_regression")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("L2-regularized Logistic Regression and Prediction")
-
   // Detect if the parameter was passed; set if so.
   if param.BatchSize != 64 {
-    setParamInt("batch_size", param.BatchSize)
-    setPassed("batch_size")
+    setParamInt(params, "batch_size", param.BatchSize)
+    setPassed(params, "batch_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.DecisionBoundary != 0.5 {
-    setParamDouble("decision_boundary", param.DecisionBoundary)
-    setPassed("decision_boundary")
+    setParamDouble(params, "decision_boundary", param.DecisionBoundary)
+    setPassed(params, "decision_boundary")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setLogisticRegression("input_model", param.InputModel)
-    setPassed("input_model")
+    setLogisticRegression(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda != 0 {
-    setParamDouble("lambda", param.Lambda)
-    setPassed("lambda")
+    setParamDouble(params, "lambda", param.Lambda)
+    setPassed(params, "lambda")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 10000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Optimizer != "lbfgs" {
-    setParamString("optimizer", param.Optimizer)
-    setPassed("optimizer")
+    setParamString(params, "optimizer", param.Optimizer)
+    setPassed(params, "optimizer")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StepSize != 0.01 {
-    setParamDouble("step_size", param.StepSize)
-    setPassed("step_size")
+    setParamDouble(params, "step_size", param.StepSize)
+    setPassed(params, "step_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
-  setPassed("output_probabilities")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackLogisticRegression()
+  C.mlpackLogisticRegression(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-  var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow("output")
   var outputModel logisticRegression
-  outputModel.getLogisticRegression("output_model")
-  var outputProbabilitiesPtr mlpackArma
-  outputProbabilities := outputProbabilitiesPtr.armaToGonumMat("output_probabilities")
+  outputModel.getLogisticRegression(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
-  return output, outputModel, outputProbabilities, predictions, probabilities
+  return outputModel, predictions, probabilities
 }

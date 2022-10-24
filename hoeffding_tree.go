@@ -136,122 +136,120 @@ func HoeffdingTreeOptions() *HoeffdingTreeOptionalParam {
 
  */
 func HoeffdingTree(param *HoeffdingTreeOptionalParam) (hoeffdingTreeModel, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("hoeffding_tree")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Hoeffding trees")
-
   // Detect if the parameter was passed; set if so.
   if param.BatchMode != false {
-    setParamBool("batch_mode", param.BatchMode)
-    setPassed("batch_mode")
+    setParamBool(params, "batch_mode", param.BatchMode)
+    setPassed(params, "batch_mode")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Bins != 10 {
-    setParamInt("bins", param.Bins)
-    setPassed("bins")
+    setParamInt(params, "bins", param.Bins)
+    setPassed(params, "bins")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Confidence != 0.95 {
-    setParamDouble("confidence", param.Confidence)
-    setPassed("confidence")
+    setParamDouble(params, "confidence", param.Confidence)
+    setPassed(params, "confidence")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InfoGain != false {
-    setParamBool("info_gain", param.InfoGain)
-    setPassed("info_gain")
+    setParamBool(params, "info_gain", param.InfoGain)
+    setPassed(params, "info_gain")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setHoeffdingTreeModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setHoeffdingTreeModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxSamples != 5000 {
-    setParamInt("max_samples", param.MaxSamples)
-    setPassed("max_samples")
+    setParamInt(params, "max_samples", param.MaxSamples)
+    setPassed(params, "max_samples")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinSamples != 100 {
-    setParamInt("min_samples", param.MinSamples)
-    setPassed("min_samples")
+    setParamInt(params, "min_samples", param.MinSamples)
+    setPassed(params, "min_samples")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumericSplitStrategy != "binary" {
-    setParamString("numeric_split_strategy", param.NumericSplitStrategy)
-    setPassed("numeric_split_strategy")
+    setParamString(params, "numeric_split_strategy", param.NumericSplitStrategy)
+    setPassed(params, "numeric_split_strategy")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ObservationsBeforeBinning != 100 {
-    setParamInt("observations_before_binning", param.ObservationsBeforeBinning)
-    setPassed("observations_before_binning")
+    setParamInt(params, "observations_before_binning", param.ObservationsBeforeBinning)
+    setPassed(params, "observations_before_binning")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Passes != 1 {
-    setParamInt("passes", param.Passes)
-    setPassed("passes")
+    setParamInt(params, "passes", param.Passes)
+    setPassed(params, "passes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMatWithInfo("test", param.Test)
-    setPassed("test")
+    gonumToArmaMatWithInfo(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestLabels != nil {
-    gonumToArmaUrow("test_labels", param.TestLabels)
-    setPassed("test_labels")
+    gonumToArmaUrow(params, "test_labels", param.TestLabels)
+    setPassed(params, "test_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMatWithInfo("training", param.Training)
-    setPassed("training")
+    gonumToArmaMatWithInfo(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackHoeffdingTree()
+  C.mlpackHoeffdingTree(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel hoeffdingTreeModel
-  outputModel.getHoeffdingTreeModel("output_model")
+  outputModel.getHoeffdingTreeModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions, probabilities
 }

@@ -51,46 +51,44 @@ func GmmGenerateOptions() *GmmGenerateOptionalParam {
 
  */
 func GmmGenerate(inputModel *gmm, samples int, param *GmmGenerateOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("gmm_generate")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("GMM Sample Generator")
+  // Detect if the parameter was passed; set if so.
+  setGMM(params, "input_model", inputModel)
+  setPassed(params, "input_model")
 
   // Detect if the parameter was passed; set if so.
-  setGMM("input_model", inputModel)
-  setPassed("input_model")
-
-  // Detect if the parameter was passed; set if so.
-  setParamInt("samples", samples)
-  setPassed("samples")
+  setParamInt(params, "samples", samples)
+  setPassed(params, "samples")
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackGmmGenerate()
+  C.mlpackGmmGenerate(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

@@ -119,77 +119,75 @@ func LarsOptions() *LarsOptionalParam {
 
  */
 func Lars(param *LarsOptionalParam) (lars, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("lars")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("LARS")
-
   // Detect if the parameter was passed; set if so.
   if param.Input != nil {
-    gonumToArmaMat("input", param.Input)
-    setPassed("input")
+    gonumToArmaMat(params, "input", param.Input)
+    setPassed(params, "input")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setLARS("input_model", param.InputModel)
-    setPassed("input_model")
+    setLARS(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda1 != 0 {
-    setParamDouble("lambda1", param.Lambda1)
-    setPassed("lambda1")
+    setParamDouble(params, "lambda1", param.Lambda1)
+    setPassed(params, "lambda1")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda2 != 0 {
-    setParamDouble("lambda2", param.Lambda2)
-    setPassed("lambda2")
+    setParamDouble(params, "lambda2", param.Lambda2)
+    setPassed(params, "lambda2")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Responses != nil {
-    gonumToArmaMat("responses", param.Responses)
-    setPassed("responses")
+    gonumToArmaMat(params, "responses", param.Responses)
+    setPassed(params, "responses")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.UseCholesky != false {
-    setParamBool("use_cholesky", param.UseCholesky)
-    setPassed("use_cholesky")
+    setParamBool(params, "use_cholesky", param.UseCholesky)
+    setPassed(params, "use_cholesky")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("output_predictions")
+  setPassed(params, "output_model")
+  setPassed(params, "output_predictions")
 
   // Call the mlpack program.
-  C.mlpackLars()
+  C.mlpackLars(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel lars
-  outputModel.getLARS("output_model")
+  outputModel.getLARS(params, "output_model")
   var outputPredictionsPtr mlpackArma
-  outputPredictions := outputPredictionsPtr.armaToGonumMat("output_predictions")
-
-  // Clear settings.
-  clearSettings()
-
+  outputPredictions := outputPredictionsPtr.armaToGonumMat(params, "output_predictions")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, outputPredictions
 }

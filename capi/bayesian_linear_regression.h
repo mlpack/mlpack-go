@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackBayesianLinearRegression();
+extern void mlpackBayesianLinearRegression(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a BayesianLinearRegression parameter.
-extern void mlpackSetBayesianLinearRegressionPtr(const char* identifier, void* value);
+extern void mlpackSetBayesianLinearRegressionPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a BayesianLinearRegression parameter.
-extern void* mlpackGetBayesianLinearRegressionPtr(const char* identifier);
+extern void* mlpackGetBayesianLinearRegressionPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

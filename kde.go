@@ -174,119 +174,117 @@ func KdeOptions() *KdeOptionalParam {
 
  */
 func Kde(param *KdeOptionalParam) (kdeModel, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("kde")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Kernel Density Estimation")
-
   // Detect if the parameter was passed; set if so.
   if param.AbsError != 0 {
-    setParamDouble("abs_error", param.AbsError)
-    setPassed("abs_error")
+    setParamDouble(params, "abs_error", param.AbsError)
+    setPassed(params, "abs_error")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "dual-tree" {
-    setParamString("algorithm", param.Algorithm)
-    setPassed("algorithm")
+    setParamString(params, "algorithm", param.Algorithm)
+    setPassed(params, "algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Bandwidth != 1 {
-    setParamDouble("bandwidth", param.Bandwidth)
-    setPassed("bandwidth")
+    setParamDouble(params, "bandwidth", param.Bandwidth)
+    setPassed(params, "bandwidth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InitialSampleSize != 100 {
-    setParamInt("initial_sample_size", param.InitialSampleSize)
-    setPassed("initial_sample_size")
+    setParamInt(params, "initial_sample_size", param.InitialSampleSize)
+    setPassed(params, "initial_sample_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setKDEModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setKDEModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Kernel != "gaussian" {
-    setParamString("kernel", param.Kernel)
-    setPassed("kernel")
+    setParamString(params, "kernel", param.Kernel)
+    setPassed(params, "kernel")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.McBreakCoef != 0.4 {
-    setParamDouble("mc_break_coef", param.McBreakCoef)
-    setPassed("mc_break_coef")
+    setParamDouble(params, "mc_break_coef", param.McBreakCoef)
+    setPassed(params, "mc_break_coef")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.McEntryCoef != 3 {
-    setParamDouble("mc_entry_coef", param.McEntryCoef)
-    setPassed("mc_entry_coef")
+    setParamDouble(params, "mc_entry_coef", param.McEntryCoef)
+    setPassed(params, "mc_entry_coef")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.McProbability != 0.95 {
-    setParamDouble("mc_probability", param.McProbability)
-    setPassed("mc_probability")
+    setParamDouble(params, "mc_probability", param.McProbability)
+    setPassed(params, "mc_probability")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MonteCarlo != false {
-    setParamBool("monte_carlo", param.MonteCarlo)
-    setPassed("monte_carlo")
+    setParamBool(params, "monte_carlo", param.MonteCarlo)
+    setPassed(params, "monte_carlo")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RelError != 0.05 {
-    setParamDouble("rel_error", param.RelError)
-    setPassed("rel_error")
+    setParamDouble(params, "rel_error", param.RelError)
+    setPassed(params, "rel_error")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tree != "kd-tree" {
-    setParamString("tree", param.Tree)
-    setPassed("tree")
+    setParamString(params, "tree", param.Tree)
+    setPassed(params, "tree")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
 
   // Call the mlpack program.
-  C.mlpackKde()
+  C.mlpackKde(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel kdeModel
-  outputModel.getKDEModel("output_model")
+  outputModel.getKDEModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumCol("predictions")
-
-  // Clear settings.
-  clearSettings()
-
+  predictions := predictionsPtr.armaToGonumCol(params, "predictions")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions
 }

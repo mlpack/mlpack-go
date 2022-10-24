@@ -89,79 +89,77 @@ func NmfOptions() *NmfOptionalParam {
 
  */
 func Nmf(input *mat.Dense, rank int, param *NmfOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("nmf")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Non-negative Matrix Factorization")
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  setParamInt("rank", rank)
-  setPassed("rank")
+  setParamInt(params, "rank", rank)
+  setPassed(params, "rank")
 
   // Detect if the parameter was passed; set if so.
   if param.InitialH != nil {
-    gonumToArmaMat("initial_h", param.InitialH)
-    setPassed("initial_h")
+    gonumToArmaMat(params, "initial_h", param.InitialH)
+    setPassed(params, "initial_h")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InitialW != nil {
-    gonumToArmaMat("initial_w", param.InitialW)
-    setPassed("initial_w")
+    gonumToArmaMat(params, "initial_w", param.InitialW)
+    setPassed(params, "initial_w")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 10000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinResidue != 1e-05 {
-    setParamDouble("min_residue", param.MinResidue)
-    setPassed("min_residue")
+    setParamDouble(params, "min_residue", param.MinResidue)
+    setPassed(params, "min_residue")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.UpdateRules != "multdist" {
-    setParamString("update_rules", param.UpdateRules)
-    setPassed("update_rules")
+    setParamString(params, "update_rules", param.UpdateRules)
+    setPassed(params, "update_rules")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("h")
-  setPassed("w")
+  setPassed(params, "h")
+  setPassed(params, "w")
 
   // Call the mlpack program.
-  C.mlpackNmf()
+  C.mlpackNmf(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var hPtr mlpackArma
-  h := hPtr.armaToGonumMat("h")
+  h := hPtr.armaToGonumMat(params, "h")
   var wPtr mlpackArma
-  w := wPtr.armaToGonumMat("w")
-
-  // Clear settings.
-  clearSettings()
-
+  w := wPtr.armaToGonumMat(params, "w")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return h, w
 }

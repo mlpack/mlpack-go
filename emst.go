@@ -69,48 +69,46 @@ func EmstOptions() *EmstOptionalParam {
 
  */
 func Emst(input *mat.Dense, param *EmstOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("emst")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Fast Euclidean Minimum Spanning Tree")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.LeafSize != 1 {
-    setParamInt("leaf_size", param.LeafSize)
-    setPassed("leaf_size")
+    setParamInt(params, "leaf_size", param.LeafSize)
+    setPassed(params, "leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Naive != false {
-    setParamBool("naive", param.Naive)
-    setPassed("naive")
+    setParamBool(params, "naive", param.Naive)
+    setPassed(params, "naive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackEmst()
+  C.mlpackEmst(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

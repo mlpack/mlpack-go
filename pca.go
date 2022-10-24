@@ -78,60 +78,58 @@ func PcaOptions() *PcaOptionalParam {
 
  */
 func Pca(input *mat.Dense, param *PcaOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("pca")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Principal Components Analysis")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.DecompositionMethod != "exact" {
-    setParamString("decomposition_method", param.DecompositionMethod)
-    setPassed("decomposition_method")
+    setParamString(params, "decomposition_method", param.DecompositionMethod)
+    setPassed(params, "decomposition_method")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NewDimensionality != 0 {
-    setParamInt("new_dimensionality", param.NewDimensionality)
-    setPassed("new_dimensionality")
+    setParamInt(params, "new_dimensionality", param.NewDimensionality)
+    setPassed(params, "new_dimensionality")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Scale != false {
-    setParamBool("scale", param.Scale)
-    setPassed("scale")
+    setParamBool(params, "scale", param.Scale)
+    setPassed(params, "scale")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.VarToRetain != 0 {
-    setParamDouble("var_to_retain", param.VarToRetain)
-    setPassed("var_to_retain")
+    setParamDouble(params, "var_to_retain", param.VarToRetain)
+    setPassed(params, "var_to_retain")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackPca()
+  C.mlpackPca(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

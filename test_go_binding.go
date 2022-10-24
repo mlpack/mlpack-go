@@ -90,155 +90,153 @@ func TestGoBindingOptions() *TestGoBindingOptionalParam {
 
  */
 func TestGoBinding(doubleIn float64, intIn int, stringIn string, param *TestGoBindingOptionalParam) (*mat.Dense, float64, int, *mat.Dense, *mat.Dense, float64, gaussianKernel, *mat.Dense, []string, string, *mat.Dense, *mat.Dense, *mat.Dense, []int) {
-  resetTimers()
-  enableTimers()
+  params := getParams("test_go_binding")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Golang binding test")
+  // Detect if the parameter was passed; set if so.
+  setParamDouble(params, "double_in", doubleIn)
+  setPassed(params, "double_in")
 
   // Detect if the parameter was passed; set if so.
-  setParamDouble("double_in", doubleIn)
-  setPassed("double_in")
+  setParamInt(params, "int_in", intIn)
+  setPassed(params, "int_in")
 
   // Detect if the parameter was passed; set if so.
-  setParamInt("int_in", intIn)
-  setPassed("int_in")
-
-  // Detect if the parameter was passed; set if so.
-  setParamString("string_in", stringIn)
-  setPassed("string_in")
+  setParamString(params, "string_in", stringIn)
+  setPassed(params, "string_in")
 
   // Detect if the parameter was passed; set if so.
   if param.BuildModel != false {
-    setParamBool("build_model", param.BuildModel)
-    setPassed("build_model")
+    setParamBool(params, "build_model", param.BuildModel)
+    setPassed(params, "build_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ColIn != nil {
-    gonumToArmaCol("col_in", param.ColIn)
-    setPassed("col_in")
+    gonumToArmaCol(params, "col_in", param.ColIn)
+    setPassed(params, "col_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Flag1 != false {
-    setParamBool("flag1", param.Flag1)
-    setPassed("flag1")
+    setParamBool(params, "flag1", param.Flag1)
+    setPassed(params, "flag1")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Flag2 != false {
-    setParamBool("flag2", param.Flag2)
-    setPassed("flag2")
+    setParamBool(params, "flag2", param.Flag2)
+    setPassed(params, "flag2")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MatrixAndInfoIn != nil {
-    gonumToArmaMatWithInfo("matrix_and_info_in", param.MatrixAndInfoIn)
-    setPassed("matrix_and_info_in")
+    gonumToArmaMatWithInfo(params, "matrix_and_info_in", param.MatrixAndInfoIn)
+    setPassed(params, "matrix_and_info_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MatrixIn != nil {
-    gonumToArmaMat("matrix_in", param.MatrixIn)
-    setPassed("matrix_in")
+    gonumToArmaMat(params, "matrix_in", param.MatrixIn)
+    setPassed(params, "matrix_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ModelIn != nil {
-    setGaussianKernel("model_in", param.ModelIn)
-    setPassed("model_in")
+    setGaussianKernel(params, "model_in", param.ModelIn)
+    setPassed(params, "model_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RowIn != nil {
-    gonumToArmaRow("row_in", param.RowIn)
-    setPassed("row_in")
+    gonumToArmaRow(params, "row_in", param.RowIn)
+    setPassed(params, "row_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StrVectorIn != nil {
-    setParamVecString("str_vector_in", param.StrVectorIn)
-    setPassed("str_vector_in")
+    setParamVecString(params, "str_vector_in", param.StrVectorIn)
+    setPassed(params, "str_vector_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.UcolIn != nil {
-    gonumToArmaUcol("ucol_in", param.UcolIn)
-    setPassed("ucol_in")
+    gonumToArmaUcol(params, "ucol_in", param.UcolIn)
+    setPassed(params, "ucol_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.UmatrixIn != nil {
-    gonumToArmaUmat("umatrix_in", param.UmatrixIn)
-    setPassed("umatrix_in")
+    gonumToArmaUmat(params, "umatrix_in", param.UmatrixIn)
+    setPassed(params, "umatrix_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.UrowIn != nil {
-    gonumToArmaUrow("urow_in", param.UrowIn)
-    setPassed("urow_in")
+    gonumToArmaUrow(params, "urow_in", param.UrowIn)
+    setPassed(params, "urow_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.VectorIn != nil {
-    setParamVecInt("vector_in", param.VectorIn)
-    setPassed("vector_in")
+    setParamVecInt(params, "vector_in", param.VectorIn)
+    setPassed(params, "vector_in")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("col_out")
-  setPassed("double_out")
-  setPassed("int_out")
-  setPassed("matrix_and_info_out")
-  setPassed("matrix_out")
-  setPassed("model_bw_out")
-  setPassed("model_out")
-  setPassed("row_out")
-  setPassed("str_vector_out")
-  setPassed("string_out")
-  setPassed("ucol_out")
-  setPassed("umatrix_out")
-  setPassed("urow_out")
-  setPassed("vector_out")
+  setPassed(params, "col_out")
+  setPassed(params, "double_out")
+  setPassed(params, "int_out")
+  setPassed(params, "matrix_and_info_out")
+  setPassed(params, "matrix_out")
+  setPassed(params, "model_bw_out")
+  setPassed(params, "model_out")
+  setPassed(params, "row_out")
+  setPassed(params, "str_vector_out")
+  setPassed(params, "string_out")
+  setPassed(params, "ucol_out")
+  setPassed(params, "umatrix_out")
+  setPassed(params, "urow_out")
+  setPassed(params, "vector_out")
 
   // Call the mlpack program.
-  C.mlpackTestGoBinding()
+  C.mlpackTestGoBinding(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var colOutPtr mlpackArma
-  colOut := colOutPtr.armaToGonumCol("col_out")
-  doubleOut := getParamDouble("double_out")
-  intOut := getParamInt("int_out")
+  colOut := colOutPtr.armaToGonumCol(params, "col_out")
+  doubleOut := getParamDouble(params, "double_out")
+  intOut := getParamInt(params, "int_out")
   var matrixAndInfoOutPtr mlpackArma
-  matrixAndInfoOut := matrixAndInfoOutPtr.armaToGonumMat("matrix_and_info_out")
+  matrixAndInfoOut := matrixAndInfoOutPtr.armaToGonumMat(params, "matrix_and_info_out")
   var matrixOutPtr mlpackArma
-  matrixOut := matrixOutPtr.armaToGonumMat("matrix_out")
-  modelBwOut := getParamDouble("model_bw_out")
+  matrixOut := matrixOutPtr.armaToGonumMat(params, "matrix_out")
+  modelBwOut := getParamDouble(params, "model_bw_out")
   var modelOut gaussianKernel
-  modelOut.getGaussianKernel("model_out")
+  modelOut.getGaussianKernel(params, "model_out")
   var rowOutPtr mlpackArma
-  rowOut := rowOutPtr.armaToGonumRow("row_out")
-  strVectorOut := getParamVecString("str_vector_out")
-  stringOut := getParamString("string_out")
+  rowOut := rowOutPtr.armaToGonumRow(params, "row_out")
+  strVectorOut := getParamVecString(params, "str_vector_out")
+  stringOut := getParamString(params, "string_out")
   var ucolOutPtr mlpackArma
-  ucolOut := ucolOutPtr.armaToGonumUcol("ucol_out")
+  ucolOut := ucolOutPtr.armaToGonumUcol(params, "ucol_out")
   var umatrixOutPtr mlpackArma
-  umatrixOut := umatrixOutPtr.armaToGonumUmat("umatrix_out")
+  umatrixOut := umatrixOutPtr.armaToGonumUmat(params, "umatrix_out")
   var urowOutPtr mlpackArma
-  urowOut := urowOutPtr.armaToGonumUrow("urow_out")
-  vectorOut := getParamVecInt("vector_out")
-
-  // Clear settings.
-  clearSettings()
-
+  urowOut := urowOutPtr.armaToGonumUrow(params, "urow_out")
+  vectorOut := getParamVecInt(params, "vector_out")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return colOut, doubleOut, intOut, matrixAndInfoOut, matrixOut, modelBwOut, modelOut, rowOut, strVectorOut, stringOut, ucolOut, umatrixOut, urowOut, vectorOut
 }

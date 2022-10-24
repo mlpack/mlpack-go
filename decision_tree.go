@@ -124,104 +124,102 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
 
  */
 func DecisionTree(param *DecisionTreeOptionalParam) (decisionTreeModel, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("decision_tree")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Decision tree")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setDecisionTreeModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setDecisionTreeModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaximumDepth != 0 {
-    setParamInt("maximum_depth", param.MaximumDepth)
-    setPassed("maximum_depth")
+    setParamInt(params, "maximum_depth", param.MaximumDepth)
+    setPassed(params, "maximum_depth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinimumGainSplit != 1e-07 {
-    setParamDouble("minimum_gain_split", param.MinimumGainSplit)
-    setPassed("minimum_gain_split")
+    setParamDouble(params, "minimum_gain_split", param.MinimumGainSplit)
+    setPassed(params, "minimum_gain_split")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinimumLeafSize != 20 {
-    setParamInt("minimum_leaf_size", param.MinimumLeafSize)
-    setPassed("minimum_leaf_size")
+    setParamInt(params, "minimum_leaf_size", param.MinimumLeafSize)
+    setPassed(params, "minimum_leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.PrintTrainingAccuracy != false {
-    setParamBool("print_training_accuracy", param.PrintTrainingAccuracy)
-    setPassed("print_training_accuracy")
+    setParamBool(params, "print_training_accuracy", param.PrintTrainingAccuracy)
+    setPassed(params, "print_training_accuracy")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.PrintTrainingError != false {
-    setParamBool("print_training_error", param.PrintTrainingError)
-    setPassed("print_training_error")
+    setParamBool(params, "print_training_error", param.PrintTrainingError)
+    setPassed(params, "print_training_error")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMatWithInfo("test", param.Test)
-    setPassed("test")
+    gonumToArmaMatWithInfo(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestLabels != nil {
-    gonumToArmaUrow("test_labels", param.TestLabels)
-    setPassed("test_labels")
+    gonumToArmaUrow(params, "test_labels", param.TestLabels)
+    setPassed(params, "test_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMatWithInfo("training", param.Training)
-    setPassed("training")
+    gonumToArmaMatWithInfo(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Weights != nil {
-    gonumToArmaMat("weights", param.Weights)
-    setPassed("weights")
+    gonumToArmaMat(params, "weights", param.Weights)
+    setPassed(params, "weights")
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackDecisionTree()
+  C.mlpackDecisionTree(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel decisionTreeModel
-  outputModel.getDecisionTreeModel("output_model")
+  outputModel.getDecisionTreeModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions, probabilities
 }

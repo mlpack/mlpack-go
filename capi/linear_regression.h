@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackLinearRegression();
+extern void mlpackLinearRegression(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a LinearRegression parameter.
-extern void mlpackSetLinearRegressionPtr(const char* identifier, void* value);
+extern void mlpackSetLinearRegressionPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a LinearRegression parameter.
-extern void* mlpackGetLinearRegressionPtr(const char* identifier);
+extern void* mlpackGetLinearRegressionPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

@@ -86,63 +86,61 @@ func PreprocessDescribeOptions() *PreprocessDescribeOptionalParam {
 
  */
 func PreprocessDescribe(input *mat.Dense, param *PreprocessDescribeOptionalParam) () {
-  resetTimers()
-  enableTimers()
+  params := getParams("preprocess_describe")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Descriptive Statistics")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Dimension != 0 {
-    setParamInt("dimension", param.Dimension)
-    setPassed("dimension")
+    setParamInt(params, "dimension", param.Dimension)
+    setPassed(params, "dimension")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Population != false {
-    setParamBool("population", param.Population)
-    setPassed("population")
+    setParamBool(params, "population", param.Population)
+    setPassed(params, "population")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Precision != 4 {
-    setParamInt("precision", param.Precision)
-    setPassed("precision")
+    setParamInt(params, "precision", param.Precision)
+    setPassed(params, "precision")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RowMajor != false {
-    setParamBool("row_major", param.RowMajor)
-    setPassed("row_major")
+    setParamBool(params, "row_major", param.RowMajor)
+    setPassed(params, "row_major")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Width != 8 {
-    setParamInt("width", param.Width)
-    setPassed("width")
+    setParamInt(params, "width", param.Width)
+    setPassed(params, "width")
   }
 
   // Mark all output options as passed.
 
   // Call the mlpack program.
-  C.mlpackPreprocessDescribe()
+  C.mlpackPreprocessDescribe(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-
-  // Clear settings.
-  clearSettings()
-
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return 
 }

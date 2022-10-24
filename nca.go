@@ -143,126 +143,124 @@ func NcaOptions() *NcaOptionalParam {
 
  */
 func Nca(input *mat.Dense, param *NcaOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("nca")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Neighborhood Components Analysis (NCA)")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.ArmijoConstant != 0.0001 {
-    setParamDouble("armijo_constant", param.ArmijoConstant)
-    setPassed("armijo_constant")
+    setParamDouble(params, "armijo_constant", param.ArmijoConstant)
+    setPassed(params, "armijo_constant")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.BatchSize != 50 {
-    setParamInt("batch_size", param.BatchSize)
-    setPassed("batch_size")
+    setParamInt(params, "batch_size", param.BatchSize)
+    setPassed(params, "batch_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LinearScan != false {
-    setParamBool("linear_scan", param.LinearScan)
-    setPassed("linear_scan")
+    setParamBool(params, "linear_scan", param.LinearScan)
+    setPassed(params, "linear_scan")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 500000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxLineSearchTrials != 50 {
-    setParamInt("max_line_search_trials", param.MaxLineSearchTrials)
-    setPassed("max_line_search_trials")
+    setParamInt(params, "max_line_search_trials", param.MaxLineSearchTrials)
+    setPassed(params, "max_line_search_trials")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxStep != 1e+20 {
-    setParamDouble("max_step", param.MaxStep)
-    setPassed("max_step")
+    setParamDouble(params, "max_step", param.MaxStep)
+    setPassed(params, "max_step")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinStep != 1e-20 {
-    setParamDouble("min_step", param.MinStep)
-    setPassed("min_step")
+    setParamDouble(params, "min_step", param.MinStep)
+    setPassed(params, "min_step")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Normalize != false {
-    setParamBool("normalize", param.Normalize)
-    setPassed("normalize")
+    setParamBool(params, "normalize", param.Normalize)
+    setPassed(params, "normalize")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumBasis != 5 {
-    setParamInt("num_basis", param.NumBasis)
-    setPassed("num_basis")
+    setParamInt(params, "num_basis", param.NumBasis)
+    setPassed(params, "num_basis")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Optimizer != "sgd" {
-    setParamString("optimizer", param.Optimizer)
-    setPassed("optimizer")
+    setParamString(params, "optimizer", param.Optimizer)
+    setPassed(params, "optimizer")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StepSize != 0.01 {
-    setParamDouble("step_size", param.StepSize)
-    setPassed("step_size")
+    setParamDouble(params, "step_size", param.StepSize)
+    setPassed(params, "step_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-07 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Wolfe != 0.9 {
-    setParamDouble("wolfe", param.Wolfe)
-    setPassed("wolfe")
+    setParamDouble(params, "wolfe", param.Wolfe)
+    setPassed(params, "wolfe")
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackNca()
+  C.mlpackNca(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

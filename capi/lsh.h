@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackLsh();
+extern void mlpackLsh(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a LSHSearch<> parameter.
-extern void mlpackSetLSHSearchPtr(const char* identifier, void* value);
+extern void mlpackSetLSHSearchPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a LSHSearch<> parameter.
-extern void* mlpackGetLSHSearchPtr(const char* identifier);
+extern void* mlpackGetLSHSearchPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

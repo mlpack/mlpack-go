@@ -50,40 +50,38 @@ func PreprocessOneHotEncodingOptions() *PreprocessOneHotEncodingOptionalParam {
 
  */
 func PreprocessOneHotEncoding(dimensions []int, input *mat.Dense, param *PreprocessOneHotEncodingOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("preprocess_one_hot_encoding")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("One Hot Encoding")
+  // Detect if the parameter was passed; set if so.
+  setParamVecInt(params, "dimensions", dimensions)
+  setPassed(params, "dimensions")
 
   // Detect if the parameter was passed; set if so.
-  setParamVecInt("dimensions", dimensions)
-  setPassed("dimensions")
-
-  // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackPreprocessOneHotEncoding()
+  C.mlpackPreprocessOneHotEncoding(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

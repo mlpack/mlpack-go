@@ -79,69 +79,67 @@ func MeanShiftOptions() *MeanShiftOptionalParam {
 
  */
 func MeanShift(input *mat.Dense, param *MeanShiftOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("mean_shift")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Mean Shift Clustering")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.ForceConvergence != false {
-    setParamBool("force_convergence", param.ForceConvergence)
-    setPassed("force_convergence")
+    setParamBool(params, "force_convergence", param.ForceConvergence)
+    setPassed(params, "force_convergence")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InPlace != false {
-    setParamBool("in_place", param.InPlace)
-    setPassed("in_place")
+    setParamBool(params, "in_place", param.InPlace)
+    setPassed(params, "in_place")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LabelsOnly != false {
-    setParamBool("labels_only", param.LabelsOnly)
-    setPassed("labels_only")
+    setParamBool(params, "labels_only", param.LabelsOnly)
+    setPassed(params, "labels_only")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 1000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Radius != 0 {
-    setParamDouble("radius", param.Radius)
-    setPassed("radius")
+    setParamDouble(params, "radius", param.Radius)
+    setPassed(params, "radius")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("centroid")
-  setPassed("output")
+  setPassed(params, "centroid")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackMeanShift()
+  C.mlpackMeanShift(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var centroidPtr mlpackArma
-  centroid := centroidPtr.armaToGonumMat("centroid")
+  centroid := centroidPtr.armaToGonumMat(params, "centroid")
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return centroid, output
 }

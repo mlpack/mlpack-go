@@ -13,7 +13,7 @@ import "gonum.org/v1/gonum/mat"
 type KrannOptionalParam struct {
     Alpha float64
     FirstLeafExact bool
-    InputModel *rannModel
+    InputModel *raModel
     K int
     LeafSize int
     Naive bool
@@ -87,7 +87,7 @@ func KrannOptions() *KrannOptionalParam {
         0.95.
    - FirstLeafExact (bool): The flag to trigger sampling only after
         exactly exploring the first leaf.
-   - InputModel (rannModel): Pre-trained kNN model.
+   - InputModel (raModel): Pre-trained kNN model.
    - K (int): Number of nearest neighbors to find.  Default value 0.
    - LeafSize (int): Leaf size for tree building (used for kd-trees, UB
         trees, R trees, R* trees, X trees, Hilbert R trees, R+ trees, R++ trees,
@@ -116,133 +116,131 @@ func KrannOptions() *KrannOptionalParam {
 
    - distances (mat.Dense): Matrix to output distances into.
    - neighbors (mat.Dense): Matrix to output neighbors into.
-   - outputModel (rannModel): If specified, the kNN model will be output
+   - outputModel (raModel): If specified, the kNN model will be output
         here.
 
  */
-func Krann(param *KrannOptionalParam) (*mat.Dense, *mat.Dense, rannModel) {
-  resetTimers()
-  enableTimers()
+func Krann(param *KrannOptionalParam) (*mat.Dense, *mat.Dense, raModel) {
+  params := getParams("krann")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("K-Rank-Approximate-Nearest-Neighbors (kRANN)")
-
   // Detect if the parameter was passed; set if so.
   if param.Alpha != 0.95 {
-    setParamDouble("alpha", param.Alpha)
-    setPassed("alpha")
+    setParamDouble(params, "alpha", param.Alpha)
+    setPassed(params, "alpha")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.FirstLeafExact != false {
-    setParamBool("first_leaf_exact", param.FirstLeafExact)
-    setPassed("first_leaf_exact")
+    setParamBool(params, "first_leaf_exact", param.FirstLeafExact)
+    setPassed(params, "first_leaf_exact")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setRANNModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setRAModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LeafSize != 20 {
-    setParamInt("leaf_size", param.LeafSize)
-    setPassed("leaf_size")
+    setParamInt(params, "leaf_size", param.LeafSize)
+    setPassed(params, "leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Naive != false {
-    setParamBool("naive", param.Naive)
-    setPassed("naive")
+    setParamBool(params, "naive", param.Naive)
+    setPassed(params, "naive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RandomBasis != false {
-    setParamBool("random_basis", param.RandomBasis)
-    setPassed("random_basis")
+    setParamBool(params, "random_basis", param.RandomBasis)
+    setPassed(params, "random_basis")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SampleAtLeaves != false {
-    setParamBool("sample_at_leaves", param.SampleAtLeaves)
-    setPassed("sample_at_leaves")
+    setParamBool(params, "sample_at_leaves", param.SampleAtLeaves)
+    setPassed(params, "sample_at_leaves")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SingleMode != false {
-    setParamBool("single_mode", param.SingleMode)
-    setPassed("single_mode")
+    setParamBool(params, "single_mode", param.SingleMode)
+    setPassed(params, "single_mode")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SingleSampleLimit != 20 {
-    setParamInt("single_sample_limit", param.SingleSampleLimit)
-    setPassed("single_sample_limit")
+    setParamInt(params, "single_sample_limit", param.SingleSampleLimit)
+    setPassed(params, "single_sample_limit")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tau != 5 {
-    setParamDouble("tau", param.Tau)
-    setPassed("tau")
+    setParamDouble(params, "tau", param.Tau)
+    setPassed(params, "tau")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TreeType != "kd" {
-    setParamString("tree_type", param.TreeType)
-    setPassed("tree_type")
+    setParamString(params, "tree_type", param.TreeType)
+    setPassed(params, "tree_type")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("distances")
-  setPassed("neighbors")
-  setPassed("output_model")
+  setPassed(params, "distances")
+  setPassed(params, "neighbors")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackKrann()
+  C.mlpackKrann(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat(params, "distances")
   var neighborsPtr mlpackArma
-  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
-  var outputModel rannModel
-  outputModel.getRANNModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  neighbors := neighborsPtr.armaToGonumUmat(params, "neighbors")
+  var outputModel raModel
+  outputModel.getRAModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return distances, neighbors, outputModel
 }

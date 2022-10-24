@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackSparseCoding();
+extern void mlpackSparseCoding(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a SparseCoding parameter.
-extern void mlpackSetSparseCodingPtr(const char* identifier, void* value);
+extern void mlpackSetSparseCodingPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a SparseCoding parameter.
-extern void* mlpackGetSparseCodingPtr(const char* identifier);
+extern void* mlpackGetSparseCodingPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

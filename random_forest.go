@@ -24,6 +24,7 @@ type RandomForestOptionalParam struct {
     TestLabels *mat.Dense
     Training *mat.Dense
     Verbose bool
+    WarmStart bool
 }
 
 func RandomForestOptions() *RandomForestOptionalParam {
@@ -41,6 +42,7 @@ func RandomForestOptions() *RandomForestOptionalParam {
     TestLabels: nil,
     Training: nil,
     Verbose: false,
+    WarmStart: false,
   }
 }
 
@@ -126,6 +128,8 @@ func RandomForestOptions() *RandomForestOptionalParam {
    - Training (mat.Dense): Training dataset.
    - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
+   - WarmStart (bool): If true and passed along with `training` and
+        `input_model` then trains more trees on top of existing model.
 
   Output parameters:
 
@@ -138,110 +142,114 @@ func RandomForestOptions() *RandomForestOptionalParam {
 
  */
 func RandomForest(param *RandomForestOptionalParam) (randomForestModel, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("random_forest")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Random forests")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setRandomForestModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setRandomForestModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaximumDepth != 0 {
-    setParamInt("maximum_depth", param.MaximumDepth)
-    setPassed("maximum_depth")
+    setParamInt(params, "maximum_depth", param.MaximumDepth)
+    setPassed(params, "maximum_depth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinimumGainSplit != 0 {
-    setParamDouble("minimum_gain_split", param.MinimumGainSplit)
-    setPassed("minimum_gain_split")
+    setParamDouble(params, "minimum_gain_split", param.MinimumGainSplit)
+    setPassed(params, "minimum_gain_split")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinimumLeafSize != 1 {
-    setParamInt("minimum_leaf_size", param.MinimumLeafSize)
-    setPassed("minimum_leaf_size")
+    setParamInt(params, "minimum_leaf_size", param.MinimumLeafSize)
+    setPassed(params, "minimum_leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumTrees != 10 {
-    setParamInt("num_trees", param.NumTrees)
-    setPassed("num_trees")
+    setParamInt(params, "num_trees", param.NumTrees)
+    setPassed(params, "num_trees")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.PrintTrainingAccuracy != false {
-    setParamBool("print_training_accuracy", param.PrintTrainingAccuracy)
-    setPassed("print_training_accuracy")
+    setParamBool(params, "print_training_accuracy", param.PrintTrainingAccuracy)
+    setPassed(params, "print_training_accuracy")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SubspaceDim != 0 {
-    setParamInt("subspace_dim", param.SubspaceDim)
-    setPassed("subspace_dim")
+    setParamInt(params, "subspace_dim", param.SubspaceDim)
+    setPassed(params, "subspace_dim")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestLabels != nil {
-    gonumToArmaUrow("test_labels", param.TestLabels)
-    setPassed("test_labels")
+    gonumToArmaUrow(params, "test_labels", param.TestLabels)
+    setPassed(params, "test_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
+  // Detect if the parameter was passed; set if so.
+  if param.WarmStart != false {
+    setParamBool(params, "warm_start", param.WarmStart)
+    setPassed(params, "warm_start")
+  }
+
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackRandomForest()
+  C.mlpackRandomForest(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel randomForestModel
-  outputModel.getRandomForestModel("output_model")
+  outputModel.getRandomForestModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions, probabilities
 }

@@ -84,72 +84,70 @@ func ImageConverterOptions() *ImageConverterOptionalParam {
 
  */
 func ImageConverter(input []string, param *ImageConverterOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("image_converter")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Image Converter")
-
   // Detect if the parameter was passed; set if so.
-  setParamVecString("input", input)
-  setPassed("input")
+  setParamVecString(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Channels != 0 {
-    setParamInt("channels", param.Channels)
-    setPassed("channels")
+    setParamInt(params, "channels", param.Channels)
+    setPassed(params, "channels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Dataset != nil {
-    gonumToArmaMat("dataset", param.Dataset)
-    setPassed("dataset")
+    gonumToArmaMat(params, "dataset", param.Dataset)
+    setPassed(params, "dataset")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Height != 0 {
-    setParamInt("height", param.Height)
-    setPassed("height")
+    setParamInt(params, "height", param.Height)
+    setPassed(params, "height")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Quality != 90 {
-    setParamInt("quality", param.Quality)
-    setPassed("quality")
+    setParamInt(params, "quality", param.Quality)
+    setPassed(params, "quality")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Save != false {
-    setParamBool("save", param.Save)
-    setPassed("save")
+    setParamBool(params, "save", param.Save)
+    setPassed(params, "save")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Width != 0 {
-    setParamInt("width", param.Width)
-    setPassed("width")
+    setParamInt(params, "width", param.Width)
+    setPassed(params, "width")
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackImageConverter()
+  C.mlpackImageConverter(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

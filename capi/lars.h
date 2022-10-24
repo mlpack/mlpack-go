@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackLars();
+extern void mlpackLars(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a LARS parameter.
-extern void mlpackSetLARSPtr(const char* identifier, void* value);
+extern void mlpackSetLARSPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a LARS parameter.
-extern void* mlpackGetLARSPtr(const char* identifier);
+extern void* mlpackGetLARSPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

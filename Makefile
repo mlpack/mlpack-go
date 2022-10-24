@@ -2,10 +2,13 @@
 .PHONY: test deps download build clean docker
 
 # mlpack version to use.
-MLPACK_VERSION?=3.4.2
+MLPACK_VERSION?=4.0.0
 
 # armadillo version to use.
-ARMA_VERSION?=8.400.0
+ARMA_VERSION?=9.800.1
+
+# cereal version to use.
+CEREAL_VERSION?=1.3.0
 
 # Go version to use when building Docker image
 GOVERSION?=1.13.1
@@ -14,9 +17,8 @@ GOVERSION?=1.13.1
 TMP_DIR?=/tmp/
 
 # Package list for each well-known Linux distribution
-RPMS = cmake curl git unzip boost-devel boost-test boost-math armadillo-devel
-DEBS = unzip build-essential cmake curl git pkg-config libboost-math-dev         \
-       libboost-test-dev libboost-serialization-dev libarmadillo-dev
+RPMS = cmake curl git unzip
+DEBS = unzip build-essential cmake curl git pkg-config
 
 # Detect Linux distribution
 UNAME_S := $(shell uname -s)
@@ -41,7 +43,7 @@ endif
 deps: $(distro_deps)
 
 deps_darwin:
-	brew install cmake curl git unzip openblas armadillo boost
+	brew install cmake curl git unzip openblas armadillo cereal
 
 deps_rh_centos:
 	sudo yum -y install pkgconfig $(RPMS)
@@ -56,9 +58,16 @@ deps_debian:
 # Download and install Armadillo.
 setup_armadillo:
 	rm -rf $(TMP_DIR)armadillo && mkdir $(TMP_DIR)armadillo && cd $(TMP_DIR)armadillo &&  \
-	curl https://ftp.fau.de/macports/distfiles/armadillo/armadillo-$(ARMA_VERSION).tar.xz \
-    	| tar -xvJ &&  cd armadillo* &&                                                   \
+	curl https://files.mlpack.org/armadillo-$(ARMA_VERSION).tar.gz \
+    	| tar -xvz &&  cd armadillo* &&                                                   \
   cmake . && make && sudo make install && cd ..  && rm -rf armadillo*
+
+# Download and install cereal..
+setup_cereal:
+	rm -rf $(TMP_DIR)cereal && mkdir $(TMP_DIR)cereal && cd $(TMP_DIR)cereal &&  \
+	curl https://files.mlpack.org//cereal-$(CEREAL_VERSION).tar.xz \
+    	| tar -xvz &&  cd cereal* &&                                                   \
+  cp -r include/* /usr/local/include/ && cd ..  && rm -rf cereal*
 
 # Download mlpack source.
 download:
@@ -85,7 +94,7 @@ clean:
 install:
 	@make deps
 ifneq ($(UNAME_S),Darwin)
-	@make setup_armadillo
+	@make setup_armadillo setup_cereal
 endif
 	@make download build sudo_install clean test
 

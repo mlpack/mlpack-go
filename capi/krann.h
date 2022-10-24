@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackKrann();
+extern void mlpackKrann(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
-// Set the pointer to a RANNModel parameter.
-extern void mlpackSetRANNModelPtr(const char* identifier, void* value);
+// Set the pointer to a RAModel parameter.
+extern void mlpackSetRAModelPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
-// Get the pointer to a RANNModel parameter.
-extern void* mlpackGetRANNModelPtr(const char* identifier);
+// Get the pointer to a RAModel parameter.
+extern void* mlpackGetRAModelPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

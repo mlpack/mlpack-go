@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackAdaboost();
+extern void mlpackAdaboost(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a AdaBoostModel parameter.
-extern void mlpackSetAdaBoostModelPtr(const char* identifier, void* value);
+extern void mlpackSetAdaBoostModelPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a AdaBoostModel parameter.
-extern void* mlpackGetAdaBoostModelPtr(const char* identifier);
+extern void* mlpackGetAdaBoostModelPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

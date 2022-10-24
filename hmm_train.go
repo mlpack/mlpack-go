@@ -84,84 +84,82 @@ func HmmTrainOptions() *HmmTrainOptionalParam {
 
  */
 func HmmTrain(inputFile string, param *HmmTrainOptionalParam) (hmmModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("hmm_train")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Hidden Markov Model (HMM) Training")
-
   // Detect if the parameter was passed; set if so.
-  setParamString("input_file", inputFile)
-  setPassed("input_file")
+  setParamString(params, "input_file", inputFile)
+  setPassed(params, "input_file")
 
   // Detect if the parameter was passed; set if so.
   if param.Batch != false {
-    setParamBool("batch", param.Batch)
-    setPassed("batch")
+    setParamBool(params, "batch", param.Batch)
+    setPassed(params, "batch")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Gaussians != 0 {
-    setParamInt("gaussians", param.Gaussians)
-    setPassed("gaussians")
+    setParamInt(params, "gaussians", param.Gaussians)
+    setPassed(params, "gaussians")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setHMMModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setHMMModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LabelsFile != "" {
-    setParamString("labels_file", param.LabelsFile)
-    setPassed("labels_file")
+    setParamString(params, "labels_file", param.LabelsFile)
+    setPassed(params, "labels_file")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.States != 0 {
-    setParamInt("states", param.States)
-    setPassed("states")
+    setParamInt(params, "states", param.States)
+    setPassed(params, "states")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-05 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Type != "gaussian" {
-    setParamString("type", param.Type)
-    setPassed("type")
+    setParamString(params, "type", param.Type)
+    setPassed(params, "type")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackHmmTrain()
+  C.mlpackHmmTrain(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel hmmModel
-  outputModel.getHMMModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getHMMModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel
 }

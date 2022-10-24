@@ -16,6 +16,7 @@ type KmeansOptionalParam struct {
     InPlace bool
     InitialCentroids *mat.Dense
     KillEmptyClusters bool
+    KmeansPlusPlus bool
     LabelsOnly bool
     MaxIterations int
     Percentage float64
@@ -32,6 +33,7 @@ func KmeansOptions() *KmeansOptionalParam {
     InPlace: false,
     InitialCentroids: nil,
     KillEmptyClusters: false,
+    KmeansPlusPlus: false,
     LabelsOnly: false,
     MaxIterations: 1000,
     Percentage: 0.02,
@@ -49,13 +51,15 @@ func KmeansOptions() *KmeansOptionalParam {
   furthest from the centroid of the cluster with maximum variance is taken to
   fill that cluster.
   
-  Optionally, the Bradley and Fayyad approach ("Refining initial points for
-  k-means clustering", 1998) can be used to select initial points by specifying
-  the "RefinedStart" parameter.  This approach works by taking random samplings
-  of the dataset; to specify the number of samplings, the "Samplings" parameter
-  is used, and to specify the percentage of the dataset to be used in each
-  sample, the "Percentage" parameter is used (it should be a value between 0.0
-  and 1.0).
+  Optionally, the strategy to choose initial centroids can be specified.  The
+  k-means++ algorithm can be used to choose initial centroids with the
+  "KmeansPlusPlus" parameter.  The Bradley and Fayyad approach ("Refining
+  initial points for k-means clustering", 1998) can be used to select initial
+  points by specifying the "RefinedStart" parameter.  This approach works by
+  taking random samplings of the dataset; to specify the number of samplings,
+  the "Samplings" parameter is used, and to specify the percentage of the
+  dataset to be used in each sample, the "Percentage" parameter is used (it
+  should be a value between 0.0 and 1.0).
   
   There are several options available for the algorithm used for each Lloyd
   iteration, specified with the "Algorithm"  option.  The standard O(kN)
@@ -116,6 +120,8 @@ func KmeansOptions() *KmeansOptionalParam {
    - InitialCentroids (mat.Dense): Start with the specified initial
         centroids.
    - KillEmptyClusters (bool): Remove empty clusters when they occur.
+   - KmeansPlusPlus (bool): Use the k-means++ initialization strategy to
+        choose initial points.
    - LabelsOnly (bool): Only output labels into output file.
    - MaxIterations (int): Maximum number of iterations before k-means
         terminates.  Default value 1000.
@@ -140,109 +146,113 @@ func KmeansOptions() *KmeansOptionalParam {
 
  */
 func Kmeans(clusters int, input *mat.Dense, param *KmeansOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("kmeans")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("K-Means Clustering")
+  // Detect if the parameter was passed; set if so.
+  setParamInt(params, "clusters", clusters)
+  setPassed(params, "clusters")
 
   // Detect if the parameter was passed; set if so.
-  setParamInt("clusters", clusters)
-  setPassed("clusters")
-
-  // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "naive" {
-    setParamString("algorithm", param.Algorithm)
-    setPassed("algorithm")
+    setParamString(params, "algorithm", param.Algorithm)
+    setPassed(params, "algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.AllowEmptyClusters != false {
-    setParamBool("allow_empty_clusters", param.AllowEmptyClusters)
-    setPassed("allow_empty_clusters")
+    setParamBool(params, "allow_empty_clusters", param.AllowEmptyClusters)
+    setPassed(params, "allow_empty_clusters")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InPlace != false {
-    setParamBool("in_place", param.InPlace)
-    setPassed("in_place")
+    setParamBool(params, "in_place", param.InPlace)
+    setPassed(params, "in_place")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InitialCentroids != nil {
-    gonumToArmaMat("initial_centroids", param.InitialCentroids)
-    setPassed("initial_centroids")
+    gonumToArmaMat(params, "initial_centroids", param.InitialCentroids)
+    setPassed(params, "initial_centroids")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.KillEmptyClusters != false {
-    setParamBool("kill_empty_clusters", param.KillEmptyClusters)
-    setPassed("kill_empty_clusters")
+    setParamBool(params, "kill_empty_clusters", param.KillEmptyClusters)
+    setPassed(params, "kill_empty_clusters")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.KmeansPlusPlus != false {
+    setParamBool(params, "kmeans_plus_plus", param.KmeansPlusPlus)
+    setPassed(params, "kmeans_plus_plus")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LabelsOnly != false {
-    setParamBool("labels_only", param.LabelsOnly)
-    setPassed("labels_only")
+    setParamBool(params, "labels_only", param.LabelsOnly)
+    setPassed(params, "labels_only")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 1000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Percentage != 0.02 {
-    setParamDouble("percentage", param.Percentage)
-    setPassed("percentage")
+    setParamDouble(params, "percentage", param.Percentage)
+    setPassed(params, "percentage")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RefinedStart != false {
-    setParamBool("refined_start", param.RefinedStart)
-    setPassed("refined_start")
+    setParamBool(params, "refined_start", param.RefinedStart)
+    setPassed(params, "refined_start")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Samplings != 100 {
-    setParamInt("samplings", param.Samplings)
-    setPassed("samplings")
+    setParamInt(params, "samplings", param.Samplings)
+    setPassed(params, "samplings")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("centroid")
-  setPassed("output")
+  setPassed(params, "centroid")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackKmeans()
+  C.mlpackKmeans(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var centroidPtr mlpackArma
-  centroid := centroidPtr.armaToGonumMat("centroid")
+  centroid := centroidPtr.armaToGonumMat(params, "centroid")
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return centroid, output
 }

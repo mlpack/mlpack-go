@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackKnn();
+extern void mlpackKnn(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a KNNModel parameter.
-extern void mlpackSetKNNModelPtr(const char* identifier, void* value);
+extern void mlpackSetKNNModelPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a KNNModel parameter.
-extern void* mlpackGetKNNModelPtr(const char* identifier);
+extern void* mlpackGetKNNModelPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

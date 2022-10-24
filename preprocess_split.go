@@ -14,6 +14,7 @@ type PreprocessSplitOptionalParam struct {
     InputLabels *mat.Dense
     NoShuffle bool
     Seed int
+    StratifyData bool
     TestRatio float64
     Verbose bool
 }
@@ -23,6 +24,7 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
     InputLabels: nil,
     NoShuffle: false,
     Seed: 0,
+    StratifyData: false,
     TestRatio: 0.2,
     Verbose: false,
   }
@@ -37,7 +39,7 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   The output training and test matrices may be saved with the "Training" and
   "Test" output parameters.
   
-  Optionally, labels can be also be split along with the data by specifying the
+  Optionally, labels can also be split along with the data by specifying the
   "InputLabels" parameter.  Splitting labels works the same way as splitting the
   data. The output training and test labels may be saved with the
   "TrainingLabels" and "TestLabels" output parameters, respectively.
@@ -74,12 +76,23 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
   
   X_test, y_test, X_train, y_train := mlpack.PreprocessSplit(X, param)
 
+  To maintain the ratio of each class in the train and test sets,
+  the"StratifyData" option can be used.
+  
+  // Initialize optional parameters for PreprocessSplit().
+  param := mlpack.PreprocessSplitOptions()
+  param.TestRatio = 0.4
+  param.StratifyData = true
+  
+  X_test, _, X_train, _ := mlpack.PreprocessSplit(X, param)
+
   Input parameters:
 
    - input (mat.Dense): Matrix containing data.
    - InputLabels (mat.Dense): Matrix containing labels.
-   - NoShuffle (bool): Avoid shuffling and splitting the data.
+   - NoShuffle (bool): Avoid shuffling the data before splitting.
    - Seed (int): Random seed (0 for std::time(NULL)).  Default value 0.
+   - StratifyData (bool): Stratify the data according to labels
    - TestRatio (float64): Ratio of test set; if not set,the ratio defaults
         to 0.2  Default value 0.2.
    - Verbose (bool): Display informational messages and the full list of
@@ -94,69 +107,73 @@ func PreprocessSplitOptions() *PreprocessSplitOptionalParam {
 
  */
 func PreprocessSplit(input *mat.Dense, param *PreprocessSplitOptionalParam) (*mat.Dense, *mat.Dense, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("preprocess_split")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Split Data")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.InputLabels != nil {
-    gonumToArmaUmat("input_labels", param.InputLabels)
-    setPassed("input_labels")
+    gonumToArmaUmat(params, "input_labels", param.InputLabels)
+    setPassed(params, "input_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NoShuffle != false {
-    setParamBool("no_shuffle", param.NoShuffle)
-    setPassed("no_shuffle")
+    setParamBool(params, "no_shuffle", param.NoShuffle)
+    setPassed(params, "no_shuffle")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.StratifyData != false {
+    setParamBool(params, "stratify_data", param.StratifyData)
+    setPassed(params, "stratify_data")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestRatio != 0.2 {
-    setParamDouble("test_ratio", param.TestRatio)
-    setPassed("test_ratio")
+    setParamDouble(params, "test_ratio", param.TestRatio)
+    setPassed(params, "test_ratio")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("test")
-  setPassed("test_labels")
-  setPassed("training")
-  setPassed("training_labels")
+  setPassed(params, "test")
+  setPassed(params, "test_labels")
+  setPassed(params, "training")
+  setPassed(params, "training_labels")
 
   // Call the mlpack program.
-  C.mlpackPreprocessSplit()
+  C.mlpackPreprocessSplit(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var testPtr mlpackArma
-  test := testPtr.armaToGonumMat("test")
+  test := testPtr.armaToGonumMat(params, "test")
   var testLabelsPtr mlpackArma
-  testLabels := testLabelsPtr.armaToGonumUmat("test_labels")
+  testLabels := testLabelsPtr.armaToGonumUmat(params, "test_labels")
   var trainingPtr mlpackArma
-  training := trainingPtr.armaToGonumMat("training")
+  training := trainingPtr.armaToGonumMat(params, "training")
   var trainingLabelsPtr mlpackArma
-  trainingLabels := trainingLabelsPtr.armaToGonumUmat("training_labels")
-
-  // Clear settings.
-  clearSettings()
-
+  trainingLabels := trainingLabelsPtr.armaToGonumUmat(params, "training_labels")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return test, testLabels, training, trainingLabels
 }

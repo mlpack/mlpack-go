@@ -60,55 +60,53 @@ func HmmGenerateOptions() *HmmGenerateOptionalParam {
 
  */
 func HmmGenerate(length int, model *hmmModel, param *HmmGenerateOptionalParam) (*mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("hmm_generate")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Hidden Markov Model (HMM) Sequence Generator")
+  // Detect if the parameter was passed; set if so.
+  setParamInt(params, "length", length)
+  setPassed(params, "length")
 
   // Detect if the parameter was passed; set if so.
-  setParamInt("length", length)
-  setPassed("length")
-
-  // Detect if the parameter was passed; set if so.
-  setHMMModel("model", model)
-  setPassed("model")
+  setHMMModel(params, "model", model)
+  setPassed(params, "model")
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StartState != 0 {
-    setParamInt("start_state", param.StartState)
-    setPassed("start_state")
+    setParamInt(params, "start_state", param.StartState)
+    setPassed(params, "start_state")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("state")
+  setPassed(params, "output")
+  setPassed(params, "state")
 
   // Call the mlpack program.
-  C.mlpackHmmGenerate()
+  C.mlpackHmmGenerate(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat(params, "output")
   var statePtr mlpackArma
-  state := statePtr.armaToGonumUmat("state")
-
-  // Clear settings.
-  clearSettings()
-
+  state := statePtr.armaToGonumUmat(params, "state")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, state
 }

@@ -139,112 +139,110 @@ func GmmTrainOptions() *GmmTrainOptionalParam {
 
  */
 func GmmTrain(gaussians int, input *mat.Dense, param *GmmTrainOptionalParam) (gmm) {
-  resetTimers()
-  enableTimers()
+  params := getParams("gmm_train")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Gaussian Mixture Model (GMM) Training")
+  // Detect if the parameter was passed; set if so.
+  setParamInt(params, "gaussians", gaussians)
+  setPassed(params, "gaussians")
 
   // Detect if the parameter was passed; set if so.
-  setParamInt("gaussians", gaussians)
-  setPassed("gaussians")
-
-  // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.DiagonalCovariance != false {
-    setParamBool("diagonal_covariance", param.DiagonalCovariance)
-    setPassed("diagonal_covariance")
+    setParamBool(params, "diagonal_covariance", param.DiagonalCovariance)
+    setPassed(params, "diagonal_covariance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setGMM("input_model", param.InputModel)
-    setPassed("input_model")
+    setGMM(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.KmeansMaxIterations != 1000 {
-    setParamInt("kmeans_max_iterations", param.KmeansMaxIterations)
-    setPassed("kmeans_max_iterations")
+    setParamInt(params, "kmeans_max_iterations", param.KmeansMaxIterations)
+    setPassed(params, "kmeans_max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 250 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NoForcePositive != false {
-    setParamBool("no_force_positive", param.NoForcePositive)
-    setPassed("no_force_positive")
+    setParamBool(params, "no_force_positive", param.NoForcePositive)
+    setPassed(params, "no_force_positive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Noise != 0 {
-    setParamDouble("noise", param.Noise)
-    setPassed("noise")
+    setParamDouble(params, "noise", param.Noise)
+    setPassed(params, "noise")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Percentage != 0.02 {
-    setParamDouble("percentage", param.Percentage)
-    setPassed("percentage")
+    setParamDouble(params, "percentage", param.Percentage)
+    setPassed(params, "percentage")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RefinedStart != false {
-    setParamBool("refined_start", param.RefinedStart)
-    setPassed("refined_start")
+    setParamBool(params, "refined_start", param.RefinedStart)
+    setPassed(params, "refined_start")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Samplings != 100 {
-    setParamInt("samplings", param.Samplings)
-    setPassed("samplings")
+    setParamInt(params, "samplings", param.Samplings)
+    setPassed(params, "samplings")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Trials != 1 {
-    setParamInt("trials", param.Trials)
-    setPassed("trials")
+    setParamInt(params, "trials", param.Trials)
+    setPassed(params, "trials")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackGmmTrain()
+  C.mlpackGmmTrain(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel gmm
-  outputModel.getGMM("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getGMM(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel
 }

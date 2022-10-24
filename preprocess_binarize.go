@@ -70,48 +70,46 @@ func PreprocessBinarizeOptions() *PreprocessBinarizeOptionalParam {
 
  */
 func PreprocessBinarize(input *mat.Dense, param *PreprocessBinarizeOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("preprocess_binarize")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Binarize Data")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.Dimension != 0 {
-    setParamInt("dimension", param.Dimension)
-    setPassed("dimension")
+    setParamInt(params, "dimension", param.Dimension)
+    setPassed(params, "dimension")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Threshold != 0 {
-    setParamDouble("threshold", param.Threshold)
-    setPassed("threshold")
+    setParamDouble(params, "threshold", param.Threshold)
+    setPassed(params, "threshold")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackPreprocessBinarize()
+  C.mlpackPreprocessBinarize(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

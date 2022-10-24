@@ -98,93 +98,91 @@ func DetOptions() *DetOptionalParam {
 
  */
 func Det(param *DetOptionalParam) (dTree, string, string, *mat.Dense, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("det")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Density Estimation With Density Estimation Trees")
-
   // Detect if the parameter was passed; set if so.
   if param.Folds != 10 {
-    setParamInt("folds", param.Folds)
-    setPassed("folds")
+    setParamInt(params, "folds", param.Folds)
+    setPassed(params, "folds")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setDTree("input_model", param.InputModel)
-    setPassed("input_model")
+    setDTree(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxLeafSize != 10 {
-    setParamInt("max_leaf_size", param.MaxLeafSize)
-    setPassed("max_leaf_size")
+    setParamInt(params, "max_leaf_size", param.MaxLeafSize)
+    setPassed(params, "max_leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MinLeafSize != 5 {
-    setParamInt("min_leaf_size", param.MinLeafSize)
-    setPassed("min_leaf_size")
+    setParamInt(params, "min_leaf_size", param.MinLeafSize)
+    setPassed(params, "min_leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.PathFormat != "lr" {
-    setParamString("path_format", param.PathFormat)
-    setPassed("path_format")
+    setParamString(params, "path_format", param.PathFormat)
+    setPassed(params, "path_format")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SkipPruning != false {
-    setParamBool("skip_pruning", param.SkipPruning)
-    setPassed("skip_pruning")
+    setParamBool(params, "skip_pruning", param.SkipPruning)
+    setPassed(params, "skip_pruning")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("tag_counters_file")
-  setPassed("tag_file")
-  setPassed("test_set_estimates")
-  setPassed("training_set_estimates")
-  setPassed("vi")
+  setPassed(params, "output_model")
+  setPassed(params, "tag_counters_file")
+  setPassed(params, "tag_file")
+  setPassed(params, "test_set_estimates")
+  setPassed(params, "training_set_estimates")
+  setPassed(params, "vi")
 
   // Call the mlpack program.
-  C.mlpackDet()
+  C.mlpackDet(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel dTree
-  outputModel.getDTree("output_model")
-  tagCountersFile := getParamString("tag_counters_file")
-  tagFile := getParamString("tag_file")
+  outputModel.getDTree(params, "output_model")
+  tagCountersFile := getParamString(params, "tag_counters_file")
+  tagFile := getParamString(params, "tag_file")
   var testSetEstimatesPtr mlpackArma
-  testSetEstimates := testSetEstimatesPtr.armaToGonumMat("test_set_estimates")
+  testSetEstimates := testSetEstimatesPtr.armaToGonumMat(params, "test_set_estimates")
   var trainingSetEstimatesPtr mlpackArma
-  trainingSetEstimates := trainingSetEstimatesPtr.armaToGonumMat("training_set_estimates")
+  trainingSetEstimates := trainingSetEstimatesPtr.armaToGonumMat(params, "training_set_estimates")
   var viPtr mlpackArma
-  vi := viPtr.armaToGonumMat("vi")
-
-  // Clear settings.
-  clearSettings()
-
+  vi := viPtr.armaToGonumMat(params, "vi")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, tagCountersFile, tagFile, testSetEstimates, trainingSetEstimates, vi
 }

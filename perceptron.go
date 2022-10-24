@@ -109,68 +109,66 @@ func PerceptronOptions() *PerceptronOptionalParam {
 
  */
 func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("perceptron")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Perceptron")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setPerceptronModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setPerceptronModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 1000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
-  setPassed("predictions")
+  setPassed(params, "output")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
 
   // Call the mlpack program.
-  C.mlpackPerceptron()
+  C.mlpackPerceptron(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow("output")
+  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel perceptronModel
-  outputModel.getPerceptronModel("output_model")
+  outputModel.getPerceptronModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
-
-  // Clear settings.
-  clearSettings()
-
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, outputModel, predictions
 }

@@ -108,110 +108,108 @@ func LshOptions() *LshOptionalParam {
 
  */
 func Lsh(param *LshOptionalParam) (*mat.Dense, *mat.Dense, lshSearch) {
-  resetTimers()
-  enableTimers()
+  params := getParams("lsh")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("K-Approximate-Nearest-Neighbor Search with LSH")
-
   // Detect if the parameter was passed; set if so.
   if param.BucketSize != 500 {
-    setParamInt("bucket_size", param.BucketSize)
-    setPassed("bucket_size")
+    setParamInt(params, "bucket_size", param.BucketSize)
+    setPassed(params, "bucket_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.HashWidth != 0 {
-    setParamDouble("hash_width", param.HashWidth)
-    setPassed("hash_width")
+    setParamDouble(params, "hash_width", param.HashWidth)
+    setPassed(params, "hash_width")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setLSHSearch("input_model", param.InputModel)
-    setPassed("input_model")
+    setLSHSearch(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumProbes != 0 {
-    setParamInt("num_probes", param.NumProbes)
-    setPassed("num_probes")
+    setParamInt(params, "num_probes", param.NumProbes)
+    setPassed(params, "num_probes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Projections != 10 {
-    setParamInt("projections", param.Projections)
-    setPassed("projections")
+    setParamInt(params, "projections", param.Projections)
+    setPassed(params, "projections")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.SecondHashSize != 99901 {
-    setParamInt("second_hash_size", param.SecondHashSize)
-    setPassed("second_hash_size")
+    setParamInt(params, "second_hash_size", param.SecondHashSize)
+    setPassed(params, "second_hash_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tables != 30 {
-    setParamInt("tables", param.Tables)
-    setPassed("tables")
+    setParamInt(params, "tables", param.Tables)
+    setPassed(params, "tables")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TrueNeighbors != nil {
-    gonumToArmaUmat("true_neighbors", param.TrueNeighbors)
-    setPassed("true_neighbors")
+    gonumToArmaUmat(params, "true_neighbors", param.TrueNeighbors)
+    setPassed(params, "true_neighbors")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("distances")
-  setPassed("neighbors")
-  setPassed("output_model")
+  setPassed(params, "distances")
+  setPassed(params, "neighbors")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackLsh()
+  C.mlpackLsh(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat(params, "distances")
   var neighborsPtr mlpackArma
-  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  neighbors := neighborsPtr.armaToGonumUmat(params, "neighbors")
   var outputModel lshSearch
-  outputModel.getLSHSearch("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getLSHSearch(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return distances, neighbors, outputModel
 }

@@ -48,39 +48,37 @@ func HmmLoglikOptions() *HmmLoglikOptionalParam {
 
  */
 func HmmLoglik(input *mat.Dense, inputModel *hmmModel, param *HmmLoglikOptionalParam) (float64) {
-  resetTimers()
-  enableTimers()
+  params := getParams("hmm_loglik")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Hidden Markov Model (HMM) Sequence Log-Likelihood")
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  setHMMModel("input_model", inputModel)
-  setPassed("input_model")
+  setHMMModel(params, "input_model", inputModel)
+  setPassed(params, "input_model")
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("log_likelihood")
+  setPassed(params, "log_likelihood")
 
   // Call the mlpack program.
-  C.mlpackHmmLoglik()
+  C.mlpackHmmLoglik(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-  logLikelihood := getParamDouble("log_likelihood")
-
-  // Clear settings.
-  clearSettings()
-
+  logLikelihood := getParamDouble(params, "log_likelihood")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return logLikelihood
 }

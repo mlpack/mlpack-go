@@ -123,24 +123,24 @@ func LmnnOptions() *LmnnOptionalParam {
   targets as 3 using BigBatch_SGD optimizer. A simple call for the same will
   look like: 
   
-  // Initialize optional parameters for MlpackLmnn().
-  param := mlpack.MlpackLmnnOptions()
+  // Initialize optional parameters for Lmnn().
+  param := mlpack.LmnnOptions()
   param.Labels = iris_labels
   param.K = 3
   param.Optimizer = "bbsgd"
   
-  _, output, _ := mlpack.MlpackLmnn(iris, param)
+  _, output, _ := mlpack.Lmnn(iris, param)
   
   An another program call making use of range & regularization parameter with
   dataset having labels as last column can be made as: 
   
-  // Initialize optional parameters for MlpackLmnn().
-  param := mlpack.MlpackLmnnOptions()
+  // Initialize optional parameters for Lmnn().
+  param := mlpack.LmnnOptions()
   param.K = 5
   param.Range = 10
   param.Regularization = 0.4
   
-  _, output, _ := mlpack.MlpackLmnn(letter_recognition, param)
+  _, output, _ := mlpack.Lmnn(letter_recognition, param)
 
   Input parameters:
 
@@ -189,144 +189,142 @@ func LmnnOptions() *LmnnOptionalParam {
 
  */
 func Lmnn(input *mat.Dense, param *LmnnOptionalParam) (*mat.Dense, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("lmnn")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Large Margin Nearest Neighbors (LMNN)")
-
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
   if param.BatchSize != 50 {
-    setParamInt("batch_size", param.BatchSize)
-    setPassed("batch_size")
+    setParamInt(params, "batch_size", param.BatchSize)
+    setPassed(params, "batch_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Center != false {
-    setParamBool("center", param.Center)
-    setPassed("center")
+    setParamBool(params, "center", param.Center)
+    setPassed(params, "center")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Distance != nil {
-    gonumToArmaMat("distance", param.Distance)
-    setPassed("distance")
+    gonumToArmaMat(params, "distance", param.Distance)
+    setPassed(params, "distance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 1 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LinearScan != false {
-    setParamBool("linear_scan", param.LinearScan)
-    setPassed("linear_scan")
+    setParamBool(params, "linear_scan", param.LinearScan)
+    setPassed(params, "linear_scan")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 100000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Normalize != false {
-    setParamBool("normalize", param.Normalize)
-    setPassed("normalize")
+    setParamBool(params, "normalize", param.Normalize)
+    setPassed(params, "normalize")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Optimizer != "amsgrad" {
-    setParamString("optimizer", param.Optimizer)
-    setPassed("optimizer")
+    setParamString(params, "optimizer", param.Optimizer)
+    setPassed(params, "optimizer")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Passes != 50 {
-    setParamInt("passes", param.Passes)
-    setPassed("passes")
+    setParamInt(params, "passes", param.Passes)
+    setPassed(params, "passes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.PrintAccuracy != false {
-    setParamBool("print_accuracy", param.PrintAccuracy)
-    setPassed("print_accuracy")
+    setParamBool(params, "print_accuracy", param.PrintAccuracy)
+    setPassed(params, "print_accuracy")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Range != 1 {
-    setParamInt("range", param.Range)
-    setPassed("range")
+    setParamInt(params, "range", param.Range)
+    setPassed(params, "range")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Rank != 0 {
-    setParamInt("rank", param.Rank)
-    setPassed("rank")
+    setParamInt(params, "rank", param.Rank)
+    setPassed(params, "rank")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Regularization != 0.5 {
-    setParamDouble("regularization", param.Regularization)
-    setPassed("regularization")
+    setParamDouble(params, "regularization", param.Regularization)
+    setPassed(params, "regularization")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StepSize != 0.01 {
-    setParamDouble("step_size", param.StepSize)
-    setPassed("step_size")
+    setParamDouble(params, "step_size", param.StepSize)
+    setPassed(params, "step_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-07 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("centered_data")
-  setPassed("output")
-  setPassed("transformed_data")
+  setPassed(params, "centered_data")
+  setPassed(params, "output")
+  setPassed(params, "transformed_data")
 
   // Call the mlpack program.
-  C.mlpackLmnn()
+  C.mlpackLmnn(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var centeredDataPtr mlpackArma
-  centeredData := centeredDataPtr.armaToGonumMat("centered_data")
+  centeredData := centeredDataPtr.armaToGonumMat(params, "centered_data")
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
+  output := outputPtr.armaToGonumMat(params, "output")
   var transformedDataPtr mlpackArma
-  transformedData := transformedDataPtr.armaToGonumMat("transformed_data")
-
-  // Clear settings.
-  clearSettings()
-
+  transformedData := transformedDataPtr.armaToGonumMat(params, "transformed_data")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return centeredData, output, transformedData
 }

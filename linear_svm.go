@@ -159,134 +159,132 @@ func LinearSvmOptions() *LinearSvmOptionalParam {
 
  */
 func LinearSvm(param *LinearSvmOptionalParam) (linearsvmModel, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("linear_svm")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Linear SVM is an L2-regularized support vector machine.")
-
   // Detect if the parameter was passed; set if so.
   if param.Delta != 1 {
-    setParamDouble("delta", param.Delta)
-    setPassed("delta")
+    setParamDouble(params, "delta", param.Delta)
+    setPassed(params, "delta")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Epochs != 50 {
-    setParamInt("epochs", param.Epochs)
-    setPassed("epochs")
+    setParamInt(params, "epochs", param.Epochs)
+    setPassed(params, "epochs")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setLinearSVMModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setLinearSVMModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda != 0.0001 {
-    setParamDouble("lambda", param.Lambda)
-    setPassed("lambda")
+    setParamDouble(params, "lambda", param.Lambda)
+    setPassed(params, "lambda")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 10000 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NoIntercept != false {
-    setParamBool("no_intercept", param.NoIntercept)
-    setPassed("no_intercept")
+    setParamBool(params, "no_intercept", param.NoIntercept)
+    setPassed(params, "no_intercept")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NumClasses != 0 {
-    setParamInt("num_classes", param.NumClasses)
-    setPassed("num_classes")
+    setParamInt(params, "num_classes", param.NumClasses)
+    setPassed(params, "num_classes")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Optimizer != "lbfgs" {
-    setParamString("optimizer", param.Optimizer)
-    setPassed("optimizer")
+    setParamString(params, "optimizer", param.Optimizer)
+    setPassed(params, "optimizer")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Shuffle != false {
-    setParamBool("shuffle", param.Shuffle)
-    setPassed("shuffle")
+    setParamBool(params, "shuffle", param.Shuffle)
+    setPassed(params, "shuffle")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.StepSize != 0.01 {
-    setParamDouble("step_size", param.StepSize)
-    setPassed("step_size")
+    setParamDouble(params, "step_size", param.StepSize)
+    setPassed(params, "step_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TestLabels != nil {
-    gonumToArmaUrow("test_labels", param.TestLabels)
-    setPassed("test_labels")
+    gonumToArmaUrow(params, "test_labels", param.TestLabels)
+    setPassed(params, "test_labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tolerance != 1e-10 {
-    setParamDouble("tolerance", param.Tolerance)
-    setPassed("tolerance")
+    setParamDouble(params, "tolerance", param.Tolerance)
+    setPassed(params, "tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output_model")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackLinearSvm()
+  C.mlpackLinearSvm(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel linearsvmModel
-  outputModel.getLinearSVMModel("output_model")
+  outputModel.getLinearSVMModel(params, "output_model")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, predictions, probabilities
 }

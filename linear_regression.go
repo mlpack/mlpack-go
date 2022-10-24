@@ -95,65 +95,63 @@ func LinearRegressionOptions() *LinearRegressionOptionalParam {
 
  */
 func LinearRegression(param *LinearRegressionOptionalParam) (linearRegression, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("linear_regression")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Simple Linear Regression and Prediction")
-
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setLinearRegression("input_model", param.InputModel)
-    setPassed("input_model")
+    setLinearRegression(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda != 0 {
-    setParamDouble("lambda", param.Lambda)
-    setPassed("lambda")
+    setParamDouble(params, "lambda", param.Lambda)
+    setPassed(params, "lambda")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TrainingResponses != nil {
-    gonumToArmaRow("training_responses", param.TrainingResponses)
-    setPassed("training_responses")
+    gonumToArmaRow(params, "training_responses", param.TrainingResponses)
+    setPassed(params, "training_responses")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output_model")
-  setPassed("output_predictions")
+  setPassed(params, "output_model")
+  setPassed(params, "output_predictions")
 
   // Call the mlpack program.
-  C.mlpackLinearRegression()
+  C.mlpackLinearRegression(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputModel linearRegression
-  outputModel.getLinearRegression("output_model")
+  outputModel.getLinearRegression(params, "output_model")
   var outputPredictionsPtr mlpackArma
-  outputPredictions := outputPredictionsPtr.armaToGonumRow("output_predictions")
-
-  // Clear settings.
-  clearSettings()
-
+  outputPredictions := outputPredictionsPtr.armaToGonumRow(params, "output_predictions")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return outputModel, outputPredictions
 }

@@ -127,110 +127,108 @@ func SparseCodingOptions() *SparseCodingOptionalParam {
 
  */
 func SparseCoding(param *SparseCodingOptionalParam) (*mat.Dense, *mat.Dense, sparseCoding) {
-  resetTimers()
-  enableTimers()
+  params := getParams("sparse_coding")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Sparse Coding")
-
   // Detect if the parameter was passed; set if so.
   if param.Atoms != 15 {
-    setParamInt("atoms", param.Atoms)
-    setPassed("atoms")
+    setParamInt(params, "atoms", param.Atoms)
+    setPassed(params, "atoms")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InitialDictionary != nil {
-    gonumToArmaMat("initial_dictionary", param.InitialDictionary)
-    setPassed("initial_dictionary")
+    gonumToArmaMat(params, "initial_dictionary", param.InitialDictionary)
+    setPassed(params, "initial_dictionary")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setSparseCoding("input_model", param.InputModel)
-    setPassed("input_model")
+    setSparseCoding(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda1 != 0 {
-    setParamDouble("lambda1", param.Lambda1)
-    setPassed("lambda1")
+    setParamDouble(params, "lambda1", param.Lambda1)
+    setPassed(params, "lambda1")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Lambda2 != 0 {
-    setParamDouble("lambda2", param.Lambda2)
-    setPassed("lambda2")
+    setParamDouble(params, "lambda2", param.Lambda2)
+    setPassed(params, "lambda2")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.MaxIterations != 0 {
-    setParamInt("max_iterations", param.MaxIterations)
-    setPassed("max_iterations")
+    setParamInt(params, "max_iterations", param.MaxIterations)
+    setPassed(params, "max_iterations")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NewtonTolerance != 1e-06 {
-    setParamDouble("newton_tolerance", param.NewtonTolerance)
-    setPassed("newton_tolerance")
+    setParamDouble(params, "newton_tolerance", param.NewtonTolerance)
+    setPassed(params, "newton_tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Normalize != false {
-    setParamBool("normalize", param.Normalize)
-    setPassed("normalize")
+    setParamBool(params, "normalize", param.Normalize)
+    setPassed(params, "normalize")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.ObjectiveTolerance != 0.01 {
-    setParamDouble("objective_tolerance", param.ObjectiveTolerance)
-    setPassed("objective_tolerance")
+    setParamDouble(params, "objective_tolerance", param.ObjectiveTolerance)
+    setPassed(params, "objective_tolerance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("codes")
-  setPassed("dictionary")
-  setPassed("output_model")
+  setPassed(params, "codes")
+  setPassed(params, "dictionary")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackSparseCoding()
+  C.mlpackSparseCoding(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var codesPtr mlpackArma
-  codes := codesPtr.armaToGonumMat("codes")
+  codes := codesPtr.armaToGonumMat(params, "codes")
   var dictionaryPtr mlpackArma
-  dictionary := dictionaryPtr.armaToGonumMat("dictionary")
+  dictionary := dictionaryPtr.armaToGonumMat(params, "dictionary")
   var outputModel sparseCoding
-  outputModel.getSparseCoding("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getSparseCoding(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return codes, dictionary, outputModel
 }

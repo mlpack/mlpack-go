@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackLinearSvm();
+extern void mlpackLinearSvm(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a LinearSVMModel parameter.
-extern void mlpackSetLinearSVMModelPtr(const char* identifier, void* value);
+extern void mlpackSetLinearSVMModelPtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a LinearSVMModel parameter.
-extern void* mlpackGetLinearSVMModelPtr(const char* identifier);
+extern void* mlpackGetLinearSVMModelPtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

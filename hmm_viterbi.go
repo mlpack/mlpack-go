@@ -48,40 +48,38 @@ func HmmViterbiOptions() *HmmViterbiOptionalParam {
 
  */
 func HmmViterbi(input *mat.Dense, inputModel *hmmModel, param *HmmViterbiOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("hmm_viterbi")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Hidden Markov Model (HMM) Viterbi State Prediction")
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  setHMMModel("input_model", inputModel)
-  setPassed("input_model")
+  setHMMModel(params, "input_model", inputModel)
+  setPassed(params, "input_model")
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackHmmViterbi()
+  C.mlpackHmmViterbi(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUmat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumUmat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

@@ -101,74 +101,72 @@ func NbcOptions() *NbcOptionalParam {
 
  */
 func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense, *mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("nbc")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Parametric Naive Bayes Classifier")
-
   // Detect if the parameter was passed; set if so.
   if param.IncrementalVariance != false {
-    setParamBool("incremental_variance", param.IncrementalVariance)
-    setPassed("incremental_variance")
+    setParamBool(params, "incremental_variance", param.IncrementalVariance)
+    setPassed(params, "incremental_variance")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setNBCModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setNBCModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Labels != nil {
-    gonumToArmaUrow("labels", param.Labels)
-    setPassed("labels")
+    gonumToArmaUrow(params, "labels", param.Labels)
+    setPassed(params, "labels")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat("test", param.Test)
-    setPassed("test")
+    gonumToArmaMat(params, "test", param.Test)
+    setPassed(params, "test")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat("training", param.Training)
-    setPassed("training")
+    gonumToArmaMat(params, "training", param.Training)
+    setPassed(params, "training")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
-  setPassed("output_model")
-  setPassed("output_probs")
-  setPassed("predictions")
-  setPassed("probabilities")
+  setPassed(params, "output")
+  setPassed(params, "output_model")
+  setPassed(params, "output_probs")
+  setPassed(params, "predictions")
+  setPassed(params, "probabilities")
 
   // Call the mlpack program.
-  C.mlpackNbc()
+  C.mlpackNbc(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow("output")
+  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel nbcModel
-  outputModel.getNBCModel("output_model")
+  outputModel.getNBCModel(params, "output_model")
   var outputProbsPtr mlpackArma
-  outputProbs := outputProbsPtr.armaToGonumMat("output_probs")
+  outputProbs := outputProbsPtr.armaToGonumMat(params, "output_probs")
   var predictionsPtr mlpackArma
-  predictions := predictionsPtr.armaToGonumUrow("predictions")
+  predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
-  probabilities := probabilitiesPtr.armaToGonumMat("probabilities")
-
-  // Clear settings.
-  clearSettings()
-
+  probabilities := probabilitiesPtr.armaToGonumMat(params, "probabilities")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output, outputModel, outputProbs, predictions, probabilities
 }

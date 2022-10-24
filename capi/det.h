@@ -15,16 +15,19 @@ extern "C"
 {
 #endif
 
-extern void mlpackDet();
+extern void mlpackDet(void* params, void* timers);
 
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
 // Set the pointer to a DTree<> parameter.
-extern void mlpackSetDTreePtr(const char* identifier, void* value);
+extern void mlpackSetDTreePtr(void* params,
+                                           const char* identifier,
+                                           void* value);
 
 // Get the pointer to a DTree<> parameter.
-extern void* mlpackGetDTreePtr(const char* identifier);
+extern void* mlpackGetDTreePtr(void* params,
+                                            const char* identifier);
 
 
 #if defined(__cplusplus) || defined(c_plusplus)

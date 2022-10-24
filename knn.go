@@ -113,122 +113,120 @@ func KnnOptions() *KnnOptionalParam {
 
  */
 func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, knnModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("knn")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("k-Nearest-Neighbors Search")
-
   // Detect if the parameter was passed; set if so.
   if param.Algorithm != "dual_tree" {
-    setParamString("algorithm", param.Algorithm)
-    setPassed("algorithm")
+    setParamString(params, "algorithm", param.Algorithm)
+    setPassed(params, "algorithm")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Epsilon != 0 {
-    setParamDouble("epsilon", param.Epsilon)
-    setPassed("epsilon")
+    setParamDouble(params, "epsilon", param.Epsilon)
+    setPassed(params, "epsilon")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setKNNModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setKNNModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.LeafSize != 20 {
-    setParamInt("leaf_size", param.LeafSize)
-    setPassed("leaf_size")
+    setParamInt(params, "leaf_size", param.LeafSize)
+    setPassed(params, "leaf_size")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.RandomBasis != false {
-    setParamBool("random_basis", param.RandomBasis)
-    setPassed("random_basis")
+    setParamBool(params, "random_basis", param.RandomBasis)
+    setPassed(params, "random_basis")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Rho != 0.7 {
-    setParamDouble("rho", param.Rho)
-    setPassed("rho")
+    setParamDouble(params, "rho", param.Rho)
+    setPassed(params, "rho")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Seed != 0 {
-    setParamInt("seed", param.Seed)
-    setPassed("seed")
+    setParamInt(params, "seed", param.Seed)
+    setPassed(params, "seed")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Tau != 0 {
-    setParamDouble("tau", param.Tau)
-    setPassed("tau")
+    setParamDouble(params, "tau", param.Tau)
+    setPassed(params, "tau")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TreeType != "kd" {
-    setParamString("tree_type", param.TreeType)
-    setPassed("tree_type")
+    setParamString(params, "tree_type", param.TreeType)
+    setPassed(params, "tree_type")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TrueDistances != nil {
-    gonumToArmaMat("true_distances", param.TrueDistances)
-    setPassed("true_distances")
+    gonumToArmaMat(params, "true_distances", param.TrueDistances)
+    setPassed(params, "true_distances")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.TrueNeighbors != nil {
-    gonumToArmaUmat("true_neighbors", param.TrueNeighbors)
-    setPassed("true_neighbors")
+    gonumToArmaUmat(params, "true_neighbors", param.TrueNeighbors)
+    setPassed(params, "true_neighbors")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("distances")
-  setPassed("neighbors")
-  setPassed("output_model")
+  setPassed(params, "distances")
+  setPassed(params, "neighbors")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackKnn()
+  C.mlpackKnn(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var distancesPtr mlpackArma
-  distances := distancesPtr.armaToGonumMat("distances")
+  distances := distancesPtr.armaToGonumMat(params, "distances")
   var neighborsPtr mlpackArma
-  neighbors := neighborsPtr.armaToGonumUmat("neighbors")
+  neighbors := neighborsPtr.armaToGonumUmat(params, "neighbors")
   var outputModel knnModel
-  outputModel.getKNNModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getKNNModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return distances, neighbors, outputModel
 }

@@ -107,110 +107,108 @@ func FastmksOptions() *FastmksOptionalParam {
 
  */
 func Fastmks(param *FastmksOptionalParam) (*mat.Dense, *mat.Dense, fastmksModel) {
-  resetTimers()
-  enableTimers()
+  params := getParams("fastmks")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("FastMKS (Fast Max-Kernel Search)")
-
   // Detect if the parameter was passed; set if so.
   if param.Bandwidth != 1 {
-    setParamDouble("bandwidth", param.Bandwidth)
-    setPassed("bandwidth")
+    setParamDouble(params, "bandwidth", param.Bandwidth)
+    setPassed(params, "bandwidth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Base != 2 {
-    setParamDouble("base", param.Base)
-    setPassed("base")
+    setParamDouble(params, "base", param.Base)
+    setPassed(params, "base")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Degree != 2 {
-    setParamDouble("degree", param.Degree)
-    setPassed("degree")
+    setParamDouble(params, "degree", param.Degree)
+    setPassed(params, "degree")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InputModel != nil {
-    setFastMKSModel("input_model", param.InputModel)
-    setPassed("input_model")
+    setFastMKSModel(params, "input_model", param.InputModel)
+    setPassed(params, "input_model")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.K != 0 {
-    setParamInt("k", param.K)
-    setPassed("k")
+    setParamInt(params, "k", param.K)
+    setPassed(params, "k")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Kernel != "linear" {
-    setParamString("kernel", param.Kernel)
-    setPassed("kernel")
+    setParamString(params, "kernel", param.Kernel)
+    setPassed(params, "kernel")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Naive != false {
-    setParamBool("naive", param.Naive)
-    setPassed("naive")
+    setParamBool(params, "naive", param.Naive)
+    setPassed(params, "naive")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Offset != 0 {
-    setParamDouble("offset", param.Offset)
-    setPassed("offset")
+    setParamDouble(params, "offset", param.Offset)
+    setPassed(params, "offset")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat("query", param.Query)
-    setPassed("query")
+    gonumToArmaMat(params, "query", param.Query)
+    setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat("reference", param.Reference)
-    setPassed("reference")
+    gonumToArmaMat(params, "reference", param.Reference)
+    setPassed(params, "reference")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Scale != 1 {
-    setParamDouble("scale", param.Scale)
-    setPassed("scale")
+    setParamDouble(params, "scale", param.Scale)
+    setPassed(params, "scale")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Single != false {
-    setParamBool("single", param.Single)
-    setPassed("single")
+    setParamBool(params, "single", param.Single)
+    setPassed(params, "single")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("indices")
-  setPassed("kernels")
-  setPassed("output_model")
+  setPassed(params, "indices")
+  setPassed(params, "kernels")
+  setPassed(params, "output_model")
 
   // Call the mlpack program.
-  C.mlpackFastmks()
+  C.mlpackFastmks(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var indicesPtr mlpackArma
-  indices := indicesPtr.armaToGonumUmat("indices")
+  indices := indicesPtr.armaToGonumUmat(params, "indices")
   var kernelsPtr mlpackArma
-  kernels := kernelsPtr.armaToGonumMat("kernels")
+  kernels := kernelsPtr.armaToGonumMat(params, "kernels")
   var outputModel fastmksModel
-  outputModel.getFastMKSModel("output_model")
-
-  // Clear settings.
-  clearSettings()
-
+  outputModel.getFastMKSModel(params, "output_model")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return indices, kernels, outputModel
 }

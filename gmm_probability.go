@@ -48,40 +48,38 @@ func GmmProbabilityOptions() *GmmProbabilityOptionalParam {
 
  */
 func GmmProbability(input *mat.Dense, inputModel *gmm, param *GmmProbabilityOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("gmm_probability")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("GMM Probability Calculator")
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  setGMM("input_model", inputModel)
-  setPassed("input_model")
+  setGMM(params, "input_model", inputModel)
+  setPassed(params, "input_model")
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackGmmProbability()
+  C.mlpackGmmProbability(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }

@@ -115,88 +115,86 @@ func KernelPcaOptions() *KernelPcaOptionalParam {
 
  */
 func KernelPca(input *mat.Dense, kernel string, param *KernelPcaOptionalParam) (*mat.Dense) {
-  resetTimers()
-  enableTimers()
+  params := getParams("kernel_pca")
+  timers := getTimers()
+
   disableBacktrace()
   disableVerbose()
-  restoreSettings("Kernel Principal Components Analysis")
+  // Detect if the parameter was passed; set if so.
+  gonumToArmaMat(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat("input", input)
-  setPassed("input")
-
-  // Detect if the parameter was passed; set if so.
-  setParamString("kernel", kernel)
-  setPassed("kernel")
+  setParamString(params, "kernel", kernel)
+  setPassed(params, "kernel")
 
   // Detect if the parameter was passed; set if so.
   if param.Bandwidth != 1 {
-    setParamDouble("bandwidth", param.Bandwidth)
-    setPassed("bandwidth")
+    setParamDouble(params, "bandwidth", param.Bandwidth)
+    setPassed(params, "bandwidth")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Center != false {
-    setParamBool("center", param.Center)
-    setPassed("center")
+    setParamBool(params, "center", param.Center)
+    setPassed(params, "center")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Degree != 1 {
-    setParamDouble("degree", param.Degree)
-    setPassed("degree")
+    setParamDouble(params, "degree", param.Degree)
+    setPassed(params, "degree")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.KernelScale != 1 {
-    setParamDouble("kernel_scale", param.KernelScale)
-    setPassed("kernel_scale")
+    setParamDouble(params, "kernel_scale", param.KernelScale)
+    setPassed(params, "kernel_scale")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NewDimensionality != 0 {
-    setParamInt("new_dimensionality", param.NewDimensionality)
-    setPassed("new_dimensionality")
+    setParamInt(params, "new_dimensionality", param.NewDimensionality)
+    setPassed(params, "new_dimensionality")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.NystroemMethod != false {
-    setParamBool("nystroem_method", param.NystroemMethod)
-    setPassed("nystroem_method")
+    setParamBool(params, "nystroem_method", param.NystroemMethod)
+    setPassed(params, "nystroem_method")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Offset != 0 {
-    setParamDouble("offset", param.Offset)
-    setPassed("offset")
+    setParamDouble(params, "offset", param.Offset)
+    setPassed(params, "offset")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Sampling != "kmeans" {
-    setParamString("sampling", param.Sampling)
-    setPassed("sampling")
+    setParamString(params, "sampling", param.Sampling)
+    setPassed(params, "sampling")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {
-    setParamBool("verbose", param.Verbose)
-    setPassed("verbose")
+    setParamBool(params, "verbose", param.Verbose)
+    setPassed(params, "verbose")
     enableVerbose()
   }
 
   // Mark all output options as passed.
-  setPassed("output")
+  setPassed(params, "output")
 
   // Call the mlpack program.
-  C.mlpackKernelPca()
+  C.mlpackKernelPca(params.mem, timers.mem)
 
   // Initialize result variable and get output.
   var outputPtr mlpackArma
-  output := outputPtr.armaToGonumMat("output")
-
-  // Clear settings.
-  clearSettings()
-
+  output := outputPtr.armaToGonumMat(params, "output")
+  // Clean memory.
+  cleanParams(params)
+  cleanTimers(timers)
   // Return output(s).
   return output
 }
