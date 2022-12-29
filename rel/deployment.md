@@ -15,5 +15,5 @@ into an automated script:
 ```sh
 rm -f *.so *.so.*
 ```
- 6. Manually change the `PACKAGE_VERSION` in `MAKEFILE`.
- 7. Commit any changed files and any added files in `root` and `capi/` folder of mlpack-go repository.
+ 6. Manually change the `MLPACK_VERSION` in `Makefile`.
+ 7. Commit any changed files and any added files in the root and `capi/` folder of mlpack-go repository.

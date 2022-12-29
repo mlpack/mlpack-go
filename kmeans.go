@@ -156,7 +156,7 @@ func Kmeans(clusters int, input *mat.Dense, param *KmeansOptionalParam) (*mat.De
   setPassed(params, "clusters")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat(params, "input", input)
+  gonumToArmaMat(params, "input", input, false)
   setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
@@ -179,7 +179,7 @@ func Kmeans(clusters int, input *mat.Dense, param *KmeansOptionalParam) (*mat.De
 
   // Detect if the parameter was passed; set if so.
   if param.InitialCentroids != nil {
-    gonumToArmaMat(params, "initial_centroids", param.InitialCentroids)
+    gonumToArmaMat(params, "initial_centroids", param.InitialCentroids, false)
     setPassed(params, "initial_centroids")
   }
 

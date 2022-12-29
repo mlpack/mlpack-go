@@ -238,7 +238,7 @@ func LinearSvm(param *LinearSvmOptionalParam) (linearsvmModel, *mat.Dense, *mat.
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat(params, "test", param.Test)
+    gonumToArmaMat(params, "test", param.Test, false)
     setPassed(params, "test")
   }
 
@@ -256,7 +256,7 @@ func LinearSvm(param *LinearSvmOptionalParam) (linearsvmModel, *mat.Dense, *mat.
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat(params, "training", param.Training)
+    gonumToArmaMat(params, "training", param.Training, false)
     setPassed(params, "training")
   }
 

@@ -150,7 +150,7 @@ func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, knnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat(params, "query", param.Query)
+    gonumToArmaMat(params, "query", param.Query, false)
     setPassed(params, "query")
   }
 
@@ -162,7 +162,7 @@ func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, knnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat(params, "reference", param.Reference)
+    gonumToArmaMat(params, "reference", param.Reference, false)
     setPassed(params, "reference")
   }
 
@@ -192,7 +192,7 @@ func Knn(param *KnnOptionalParam) (*mat.Dense, *mat.Dense, knnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.TrueDistances != nil {
-    gonumToArmaMat(params, "true_distances", param.TrueDistances)
+    gonumToArmaMat(params, "true_distances", param.TrueDistances, false)
     setPassed(params, "true_distances")
   }
 

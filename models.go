@@ -1,7 +1,6 @@
 package mlpack
 
 /*
-#include <capi/test_go_binding.h>
 #include <capi/approx_kfn.h>
 #include <capi/bayesian_linear_regression.h>
 #include <capi/cf.h>
@@ -40,27 +39,6 @@ import (
   "runtime"
   "unsafe"
 )
-
-type gaussianKernel struct {
-  mem unsafe.Pointer 
-}
-
-func (m *gaussianKernel) allocGaussianKernel(params *params, identifier string) {
-  m.mem = C.mlpackGetGaussianKernelPtr(params.mem,
-      C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *gaussianKernel) getGaussianKernel(params *params, identifier string) {
-  m.allocGaussianKernel(params, identifier)
-}
-
-func setGaussianKernel(params* params,
-                           identifier string,
-                           ptr *gaussianKernel) {
-  C.mlpackSetGaussianKernelPtr(params.mem,
-      C.CString(identifier), ptr.mem)
-}
 
 type approxkfnModel struct {
   mem unsafe.Pointer 

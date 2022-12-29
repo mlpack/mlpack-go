@@ -136,7 +136,7 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat(params, "test", param.Test)
+    gonumToArmaMat(params, "test", param.Test, false)
     setPassed(params, "test")
   }
 
@@ -148,7 +148,7 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat(params, "training", param.Training)
+    gonumToArmaMat(params, "training", param.Training, false)
     setPassed(params, "training")
   }
 

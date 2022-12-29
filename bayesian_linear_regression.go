@@ -132,7 +132,7 @@ func BayesianLinearRegression(param *BayesianLinearRegressionOptionalParam) (bay
 
   // Detect if the parameter was passed; set if so.
   if param.Input != nil {
-    gonumToArmaMat(params, "input", param.Input)
+    gonumToArmaMat(params, "input", param.Input, false)
     setPassed(params, "input")
   }
 
@@ -156,7 +156,7 @@ func BayesianLinearRegression(param *BayesianLinearRegressionOptionalParam) (bay
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat(params, "test", param.Test)
+    gonumToArmaMat(params, "test", param.Test, false)
     setPassed(params, "test")
   }
 

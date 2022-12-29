@@ -149,7 +149,7 @@ func Nca(input *mat.Dense, param *NcaOptionalParam) (*mat.Dense) {
   disableBacktrace()
   disableVerbose()
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat(params, "input", input)
+  gonumToArmaMat(params, "input", input, false)
   setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.

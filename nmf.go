@@ -95,7 +95,7 @@ func Nmf(input *mat.Dense, rank int, param *NmfOptionalParam) (*mat.Dense, *mat.
   disableBacktrace()
   disableVerbose()
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat(params, "input", input)
+  gonumToArmaMat(params, "input", input, false)
   setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
@@ -104,13 +104,13 @@ func Nmf(input *mat.Dense, rank int, param *NmfOptionalParam) (*mat.Dense, *mat.
 
   // Detect if the parameter was passed; set if so.
   if param.InitialH != nil {
-    gonumToArmaMat(params, "initial_h", param.InitialH)
+    gonumToArmaMat(params, "initial_h", param.InitialH, false)
     setPassed(params, "initial_h")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.InitialW != nil {
-    gonumToArmaMat(params, "initial_w", param.InitialW)
+    gonumToArmaMat(params, "initial_w", param.InitialW, false)
     setPassed(params, "initial_w")
   }
 

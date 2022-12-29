@@ -164,7 +164,7 @@ func Krann(param *KrannOptionalParam) (*mat.Dense, *mat.Dense, raModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat(params, "query", param.Query)
+    gonumToArmaMat(params, "query", param.Query, false)
     setPassed(params, "query")
   }
 
@@ -176,7 +176,7 @@ func Krann(param *KrannOptionalParam) (*mat.Dense, *mat.Dense, raModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat(params, "reference", param.Reference)
+    gonumToArmaMat(params, "reference", param.Reference, false)
     setPassed(params, "reference")
   }
 

@@ -153,7 +153,7 @@ func Kfn(param *KfnOptionalParam) (*mat.Dense, *mat.Dense, kfnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat(params, "query", param.Query)
+    gonumToArmaMat(params, "query", param.Query, false)
     setPassed(params, "query")
   }
 
@@ -165,7 +165,7 @@ func Kfn(param *KfnOptionalParam) (*mat.Dense, *mat.Dense, kfnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat(params, "reference", param.Reference)
+    gonumToArmaMat(params, "reference", param.Reference, false)
     setPassed(params, "reference")
   }
 
@@ -183,7 +183,7 @@ func Kfn(param *KfnOptionalParam) (*mat.Dense, *mat.Dense, kfnModel) {
 
   // Detect if the parameter was passed; set if so.
   if param.TrueDistances != nil {
-    gonumToArmaMat(params, "true_distances", param.TrueDistances)
+    gonumToArmaMat(params, "true_distances", param.TrueDistances, false)
     setPassed(params, "true_distances")
   }
 

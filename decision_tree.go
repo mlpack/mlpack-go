@@ -198,7 +198,7 @@ func DecisionTree(param *DecisionTreeOptionalParam) (decisionTreeModel, *mat.Den
 
   // Detect if the parameter was passed; set if so.
   if param.Weights != nil {
-    gonumToArmaMat(params, "weights", param.Weights)
+    gonumToArmaMat(params, "weights", param.Weights, false)
     setPassed(params, "weights")
   }
 

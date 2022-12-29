@@ -195,7 +195,7 @@ func Lmnn(input *mat.Dense, param *LmnnOptionalParam) (*mat.Dense, *mat.Dense, *
   disableBacktrace()
   disableVerbose()
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat(params, "input", input)
+  gonumToArmaMat(params, "input", input, false)
   setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
@@ -212,7 +212,7 @@ func Lmnn(input *mat.Dense, param *LmnnOptionalParam) (*mat.Dense, *mat.Dense, *
 
   // Detect if the parameter was passed; set if so.
   if param.Distance != nil {
-    gonumToArmaMat(params, "distance", param.Distance)
+    gonumToArmaMat(params, "distance", param.Distance, false)
     setPassed(params, "distance")
   }
 

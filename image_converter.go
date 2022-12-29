@@ -101,7 +101,7 @@ func ImageConverter(input []string, param *ImageConverterOptionalParam) (*mat.De
 
   // Detect if the parameter was passed; set if so.
   if param.Dataset != nil {
-    gonumToArmaMat(params, "dataset", param.Dataset)
+    gonumToArmaMat(params, "dataset", param.Dataset, false)
     setPassed(params, "dataset")
   }
 

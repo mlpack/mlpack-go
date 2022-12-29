@@ -126,7 +126,7 @@ func Lars(param *LarsOptionalParam) (lars, *mat.Dense) {
   disableVerbose()
   // Detect if the parameter was passed; set if so.
   if param.Input != nil {
-    gonumToArmaMat(params, "input", param.Input)
+    gonumToArmaMat(params, "input", param.Input, true)
     setPassed(params, "input")
   }
 
@@ -150,13 +150,13 @@ func Lars(param *LarsOptionalParam) (lars, *mat.Dense) {
 
   // Detect if the parameter was passed; set if so.
   if param.Responses != nil {
-    gonumToArmaMat(params, "responses", param.Responses)
+    gonumToArmaMat(params, "responses", param.Responses, false)
     setPassed(params, "responses")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat(params, "test", param.Test)
+    gonumToArmaMat(params, "test", param.Test, true)
     setPassed(params, "test")
   }
 

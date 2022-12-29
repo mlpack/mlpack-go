@@ -131,7 +131,7 @@ func LocalCoordinateCoding(param *LocalCoordinateCodingOptionalParam) (*mat.Dens
 
   // Detect if the parameter was passed; set if so.
   if param.InitialDictionary != nil {
-    gonumToArmaMat(params, "initial_dictionary", param.InitialDictionary)
+    gonumToArmaMat(params, "initial_dictionary", param.InitialDictionary, false)
     setPassed(params, "initial_dictionary")
   }
 
@@ -167,7 +167,7 @@ func LocalCoordinateCoding(param *LocalCoordinateCodingOptionalParam) (*mat.Dens
 
   // Detect if the parameter was passed; set if so.
   if param.Test != nil {
-    gonumToArmaMat(params, "test", param.Test)
+    gonumToArmaMat(params, "test", param.Test, false)
     setPassed(params, "test")
   }
 
@@ -179,7 +179,7 @@ func LocalCoordinateCoding(param *LocalCoordinateCodingOptionalParam) (*mat.Dens
 
   // Detect if the parameter was passed; set if so.
   if param.Training != nil {
-    gonumToArmaMat(params, "training", param.Training)
+    gonumToArmaMat(params, "training", param.Training, false)
     setPassed(params, "training")
   }
 

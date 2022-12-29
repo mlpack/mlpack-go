@@ -158,7 +158,7 @@ func ApproxKfn(param *ApproxKfnOptionalParam) (*mat.Dense, *mat.Dense, approxkfn
 
   // Detect if the parameter was passed; set if so.
   if param.ExactDistances != nil {
-    gonumToArmaMat(params, "exact_distances", param.ExactDistances)
+    gonumToArmaMat(params, "exact_distances", param.ExactDistances, false)
     setPassed(params, "exact_distances")
   }
 
@@ -188,13 +188,13 @@ func ApproxKfn(param *ApproxKfnOptionalParam) (*mat.Dense, *mat.Dense, approxkfn
 
   // Detect if the parameter was passed; set if so.
   if param.Query != nil {
-    gonumToArmaMat(params, "query", param.Query)
+    gonumToArmaMat(params, "query", param.Query, false)
     setPassed(params, "query")
   }
 
   // Detect if the parameter was passed; set if so.
   if param.Reference != nil {
-    gonumToArmaMat(params, "reference", param.Reference)
+    gonumToArmaMat(params, "reference", param.Reference, false)
     setPassed(params, "reference")
   }
 
