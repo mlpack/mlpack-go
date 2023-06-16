@@ -11,6 +11,7 @@ import "C"
 import "gonum.org/v1/gonum/mat" 
 
 type PreprocessOneHotEncodingOptionalParam struct {
+    Dimensions []int
     Verbose bool
 }
 
@@ -25,6 +26,10 @@ func PreprocessOneHotEncodingOptions() *PreprocessOneHotEncodingOptionalParam {
   of the respective features at those indices. Indices represent the IDs of the
   dimensions to be one-hot encoded.
   
+  If no dimensions are specified with "Dimensions", then all categorical-type
+  dimensions will be one-hot encoded. Otherwise, only the dimensions given in
+  "Dimensions" will be one-hot encoded.
+  
   The output matrix with encoded features may be saved with the "Output"
   parameters.
 
@@ -33,14 +38,17 @@ func PreprocessOneHotEncodingOptions() *PreprocessOneHotEncodingOptionalParam {
   
   // Initialize optional parameters for PreprocessOneHotEncoding().
   param := mlpack.PreprocessOneHotEncodingOptions()
+  param.Dimensions = 1
+  param.Dimensions = 3
   
-  X_ouput := mlpack.PreprocessOneHotEncoding(X, 1, 3, param)
+  X_ouput := mlpack.PreprocessOneHotEncoding(X, param)
 
   Input parameters:
 
-   - dimensions ([]int): Index of dimensions thatneed to be one-hot
-        encoded.
-   - input (mat.Dense): Matrix containing data.
+   - input (matrixWithInfo): Matrix containing data.
+   - Dimensions ([]int): Index of dimensions that need to be one-hot
+        encoded (if unspecified, all categorical dimensions are one-hot
+        encoded).
    - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
@@ -49,19 +57,21 @@ func PreprocessOneHotEncodingOptions() *PreprocessOneHotEncodingOptionalParam {
    - output (mat.Dense): Matrix to save one-hot encoded features data to.
 
  */
-func PreprocessOneHotEncoding(dimensions []int, input *mat.Dense, param *PreprocessOneHotEncodingOptionalParam) (*mat.Dense) {
+func PreprocessOneHotEncoding(input *matrixWithInfo, param *PreprocessOneHotEncodingOptionalParam) (*mat.Dense) {
   params := getParams("preprocess_one_hot_encoding")
   timers := getTimers()
 
   disableBacktrace()
   disableVerbose()
   // Detect if the parameter was passed; set if so.
-  setParamVecInt(params, "dimensions", dimensions)
-  setPassed(params, "dimensions")
+  gonumToArmaMatWithInfo(params, "input", input)
+  setPassed(params, "input")
 
   // Detect if the parameter was passed; set if so.
-  gonumToArmaMat(params, "input", input, false)
-  setPassed(params, "input")
+  if param.Dimensions != nil {
+    setParamVecInt(params, "dimensions", param.Dimensions)
+    setPassed(params, "dimensions")
+  }
 
   // Detect if the parameter was passed; set if so.
   if param.Verbose != false {

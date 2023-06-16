@@ -15,6 +15,8 @@ type LarsOptionalParam struct {
     InputModel *lars
     Lambda1 float64
     Lambda2 float64
+    NoIntercept bool
+    NoNormalize bool
     Responses *mat.Dense
     Test *mat.Dense
     UseCholesky bool
@@ -27,6 +29,8 @@ func LarsOptions() *LarsOptionalParam {
     InputModel: nil,
     Lambda1: 0,
     Lambda2: 0,
+    NoIntercept: false,
+    NoNormalize: false,
     Responses: nil,
     Test: nil,
     UseCholesky: false,
@@ -103,6 +107,9 @@ func LarsOptions() *LarsOptionalParam {
         Default value 0.
    - Lambda2 (float64): Regularization parameter for l2-norm penalty. 
         Default value 0.
+   - NoIntercept (bool): Do not fit an intercept in the model.
+   - NoNormalize (bool): Do not normalize data to unit variance before
+        modeling.
    - Responses (mat.Dense): Matrix of responses/observations (y).
    - Test (mat.Dense): Matrix containing points to regress on (test
         points).
@@ -146,6 +153,18 @@ func Lars(param *LarsOptionalParam) (lars, *mat.Dense) {
   if param.Lambda2 != 0 {
     setParamDouble(params, "lambda2", param.Lambda2)
     setPassed(params, "lambda2")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.NoIntercept != false {
+    setParamBool(params, "no_intercept", param.NoIntercept)
+    setPassed(params, "no_intercept")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.NoNormalize != false {
+    setParamBool(params, "no_normalize", param.NoNormalize)
+    setPassed(params, "no_normalize")
   }
 
   // Detect if the parameter was passed; set if so.
