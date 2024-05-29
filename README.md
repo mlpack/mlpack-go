@@ -9,8 +9,7 @@ machine learning library"></a>
 <h5 align="center">
   <a href="https://mlpack.org">Home</a> |
   <a href="https://www.mlpack.org/doc/">Documentation</a> |
-|
-  <a href="https://www.mlpack.org/questions.html">Questions</a> |
+  <a href="https://www.mlpack.org/questions.html">Questions</a>
 </h5>
 
 This repository contains the *Go bindings* for mlpack.  These bindings are
