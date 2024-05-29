@@ -58,10 +58,6 @@ func AdaboostOptions() *AdaboostOptionalParam {
   parameter.  The predicted classes for each point in the test dataset are
   output to the "Predictions" output parameter.  The AdaBoost model itself is
   output to the "OutputModel" output parameter.
-  
-  Note: the following parameter is deprecated and will be removed in mlpack
-  4.0.0: "Output".
-  Use "Predictions" instead of "Output".
 
   For example, to run AdaBoost on an input dataset data with labels labelsand
   perceptrons as the weak learner type, storing the trained model in model, one
@@ -73,7 +69,7 @@ func AdaboostOptions() *AdaboostOptionalParam {
   param.Labels = labels
   param.WeakLearner = "perceptron"
   
-  _, model, _, _ := mlpack.Adaboost(param)
+  model, _, _ := mlpack.Adaboost(param)
   
   Similarly, an already-trained model in model can be used to provide class
   predictions from test data test_data and store the output in predictions with
@@ -84,7 +80,7 @@ func AdaboostOptions() *AdaboostOptionalParam {
   param.InputModel = &model
   param.Test = test_data
   
-  _, _, predictions, _ := mlpack.Adaboost(param)
+  _, predictions, _ := mlpack.Adaboost(param)
 
   Input parameters:
 
@@ -103,14 +99,13 @@ func AdaboostOptions() *AdaboostOptionalParam {
 
   Output parameters:
 
-   - output (mat.Dense): Predicted labels for the test set.
    - outputModel (adaBoostModel): Output trained AdaBoost model.
    - predictions (mat.Dense): Predicted labels for the test set.
    - probabilities (mat.Dense): Predicted class probabilities for each
         point in the test set.
 
  */
-func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Dense, *mat.Dense) {
+func Adaboost(param *AdaboostOptionalParam) (adaBoostModel, *mat.Dense, *mat.Dense) {
   params := getParams("adaboost")
   timers := getTimers()
 
@@ -166,7 +161,6 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
   }
 
   // Mark all output options as passed.
-  setPassed(params, "output")
   setPassed(params, "output_model")
   setPassed(params, "predictions")
   setPassed(params, "probabilities")
@@ -175,8 +169,6 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
   C.mlpackAdaboost(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-  var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel adaBoostModel
   outputModel.getAdaBoostModel(params, "output_model")
   var predictionsPtr mlpackArma
@@ -187,5 +179,5 @@ func Adaboost(param *AdaboostOptionalParam) (*mat.Dense, adaBoostModel, *mat.Den
   cleanParams(params)
   cleanTimers(timers)
   // Return output(s).
-  return output, outputModel, predictions, probabilities
+  return outputModel, predictions, probabilities
 }

@@ -20,12 +20,12 @@ extern void mlpackSparseCoding(void* params, void* timers);
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
-// Set the pointer to a SparseCoding parameter.
+// Set the pointer to a SparseCoding<> parameter.
 extern void mlpackSetSparseCodingPtr(void* params,
                                            const char* identifier,
                                            void* value);
 
-// Get the pointer to a SparseCoding parameter.
+// Get the pointer to a SparseCoding<> parameter.
 extern void* mlpackGetSparseCodingPtr(void* params,
                                             const char* identifier);
 

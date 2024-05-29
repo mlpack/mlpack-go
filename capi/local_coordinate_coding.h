@@ -20,12 +20,12 @@ extern void mlpackLocalCoordinateCoding(void* params, void* timers);
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
-// Set the pointer to a LocalCoordinateCoding parameter.
+// Set the pointer to a LocalCoordinateCoding<> parameter.
 extern void mlpackSetLocalCoordinateCodingPtr(void* params,
                                            const char* identifier,
                                            void* value);
 
-// Get the pointer to a LocalCoordinateCoding parameter.
+// Get the pointer to a LocalCoordinateCoding<> parameter.
 extern void* mlpackGetLocalCoordinateCodingPtr(void* params,
                                             const char* identifier);
 

@@ -20,12 +20,12 @@ extern void mlpackSoftmaxRegression(void* params, void* timers);
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
-// Set the pointer to a SoftmaxRegression parameter.
+// Set the pointer to a SoftmaxRegression<> parameter.
 extern void mlpackSetSoftmaxRegressionPtr(void* params,
                                            const char* identifier,
                                            void* value);
 
-// Get the pointer to a SoftmaxRegression parameter.
+// Get the pointer to a SoftmaxRegression<> parameter.
 extern void* mlpackGetSoftmaxRegressionPtr(void* params,
                                             const char* identifier);
 

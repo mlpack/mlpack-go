@@ -52,9 +52,6 @@ func NbcOptions() *NbcOptionalParam {
   "Test" parameter, and the classifications may be saved with the
   "Predictions"predictions  parameter.  If saving the trained model is desired,
   this may be done with the "OutputModel" output parameter.
-  
-  Note: the "Output" and "OutputProbs" parameters are deprecated and will be
-  removed in mlpack 4.0.0.  Use "Predictions" and "Probabilities" instead.
 
   For example, to train a Naive Bayes classifier on the dataset data with labels
   labels and save the model to nbc_model, the following command may be used:
@@ -64,7 +61,7 @@ func NbcOptions() *NbcOptionalParam {
   param.Training = data
   param.Labels = labels
   
-  _, nbc_model, _, _, _ := mlpack.Nbc(param)
+  nbc_model, _, _ := mlpack.Nbc(param)
   
   Then, to use nbc_model to predict the classes of the dataset test_set and save
   the predicted classes to predictions, the following command may be used:
@@ -74,7 +71,7 @@ func NbcOptions() *NbcOptionalParam {
   param.InputModel = &nbc_model
   param.Test = test_set
   
-  predictions, _, _, _, _ := mlpack.Nbc(param)
+  _, predictions, _ := mlpack.Nbc(param)
 
   Input parameters:
 
@@ -89,18 +86,14 @@ func NbcOptions() *NbcOptionalParam {
 
   Output parameters:
 
-   - output (mat.Dense): The matrix in which the predicted labels for the
-        test set will be written (deprecated).
    - outputModel (nbcModel): File to save trained Naive Bayes model to.
-   - outputProbs (mat.Dense): The matrix in which the predicted
-        probability of labels for the test set will be written (deprecated).
    - predictions (mat.Dense): The matrix in which the predicted labels for
         the test set will be written.
    - probabilities (mat.Dense): The matrix in which the predicted
         probability of labels for the test set will be written.
 
  */
-func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense, *mat.Dense) {
+func Nbc(param *NbcOptionalParam) (nbcModel, *mat.Dense, *mat.Dense) {
   params := getParams("nbc")
   timers := getTimers()
 
@@ -144,9 +137,7 @@ func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense,
   }
 
   // Mark all output options as passed.
-  setPassed(params, "output")
   setPassed(params, "output_model")
-  setPassed(params, "output_probs")
   setPassed(params, "predictions")
   setPassed(params, "probabilities")
 
@@ -154,12 +145,8 @@ func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense,
   C.mlpackNbc(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-  var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel nbcModel
   outputModel.getNBCModel(params, "output_model")
-  var outputProbsPtr mlpackArma
-  outputProbs := outputProbsPtr.armaToGonumMat(params, "output_probs")
   var predictionsPtr mlpackArma
   predictions := predictionsPtr.armaToGonumUrow(params, "predictions")
   var probabilitiesPtr mlpackArma
@@ -168,5 +155,5 @@ func Nbc(param *NbcOptionalParam) (*mat.Dense, nbcModel, *mat.Dense, *mat.Dense,
   cleanParams(params)
   cleanTimers(timers)
   // Return output(s).
-  return output, outputModel, outputProbs, predictions, probabilities
+  return outputModel, predictions, probabilities
 }

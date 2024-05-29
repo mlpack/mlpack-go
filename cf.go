@@ -75,7 +75,8 @@ func CfOptions() *CfOptionalParam {
   specified with the "Neighborhood" parameter.
   
   For performing the matrix decomposition, the following optimization algorithms
-  can be specified via the "Algorithm" parameter: 
+  can be specified via the "Algorithm" parameter:
+  
    - 'RegSVD' -- Regularized SVD using a SGD optimizer
    - 'NMF' -- Non-negative matrix factorization with alternating least squares
   update rules
@@ -91,6 +92,7 @@ func CfOptions() *CfOptionalParam {
   
   The following neighbor search algorithms can be specified via the
   "NeighborSearch" parameter:
+  
    - 'cosine'  -- Cosine Search Algorithm
    - 'euclidean'  -- Euclidean Search Algorithm
    - 'pearson'  -- Pearson Search Algorithm
@@ -98,6 +100,7 @@ func CfOptions() *CfOptionalParam {
   
   The following weight interpolation algorithms can be specified via the
   "Interpolation" parameter:
+  
    - 'average'  -- Average Interpolation Algorithm
    - 'regression'  -- Regression Interpolation Algorithm
    - 'similarity'  -- Similarity Interpolation Algorithm
@@ -105,6 +108,7 @@ func CfOptions() *CfOptionalParam {
   
   The following ranking normalization algorithms can be specified via the
   "Normalization" parameter:
+  
    - 'none'  -- No Normalization
    - 'item_mean'  -- Item Mean Normalization
    - 'overall_mean'  -- Overall Mean Normalization

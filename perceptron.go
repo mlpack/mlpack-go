@@ -46,10 +46,6 @@ func PerceptronOptions() *PerceptronOptionalParam {
   classification results on the test set may be saved with the "Predictions"
   output parameter.  The perceptron model may be saved with the "OutputModel"
   output parameter.
-  
-  Note: the following parameter is deprecated and will be removed in mlpack
-  4.0.0: "Output".
-  Use "Predictions" instead of "Output".
 
   The training data given with the "Training" option may have class labels as
   its last dimension (so, if the training data is in CSV format, labels should
@@ -66,7 +62,7 @@ func PerceptronOptions() *PerceptronOptionalParam {
   param.Training = training_data
   param.Labels = training_labels
   
-  _, perceptron_model, _ := mlpack.Perceptron(param)
+  perceptron_model, _ := mlpack.Perceptron(param)
   
   Then, this model can be re-used for classification on the test data test_data.
    The example below does precisely that, saving the predicted classes to
@@ -77,7 +73,7 @@ func PerceptronOptions() *PerceptronOptionalParam {
   param.InputModel = &perceptron_model
   param.Test = test_data
   
-  _, _, predictions := mlpack.Perceptron(param)
+  _, predictions := mlpack.Perceptron(param)
   
   Note that all of the options may be specified at once: predictions may be
   calculated right after training a model, and model training can occur even if
@@ -101,14 +97,12 @@ func PerceptronOptions() *PerceptronOptionalParam {
 
   Output parameters:
 
-   - output (mat.Dense): The matrix in which the predicted labels for the
-        test set will be written.
    - outputModel (perceptronModel): Output for trained perceptron model.
    - predictions (mat.Dense): The matrix in which the predicted labels for
         the test set will be written.
 
  */
-func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *mat.Dense) {
+func Perceptron(param *PerceptronOptionalParam) (perceptronModel, *mat.Dense) {
   params := getParams("perceptron")
   timers := getTimers()
 
@@ -152,7 +146,6 @@ func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *m
   }
 
   // Mark all output options as passed.
-  setPassed(params, "output")
   setPassed(params, "output_model")
   setPassed(params, "predictions")
 
@@ -160,8 +153,6 @@ func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *m
   C.mlpackPerceptron(params.mem, timers.mem)
 
   // Initialize result variable and get output.
-  var outputPtr mlpackArma
-  output := outputPtr.armaToGonumUrow(params, "output")
   var outputModel perceptronModel
   outputModel.getPerceptronModel(params, "output_model")
   var predictionsPtr mlpackArma
@@ -170,5 +161,5 @@ func Perceptron(param *PerceptronOptionalParam) (*mat.Dense, perceptronModel, *m
   cleanParams(params)
   cleanTimers(timers)
   // Return output(s).
-  return output, outputModel, predictions
+  return outputModel, predictions
 }

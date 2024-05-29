@@ -47,25 +47,25 @@ func KernelPcaOptions() *KernelPcaOptionalParam {
   The kernels that are supported are listed below:
   
    * 'linear': the standard linear dot product (same as normal PCA):
-      K(x, y) = x^T y
+      `K(x, y) = x^T y`
   
    * 'gaussian': a Gaussian kernel; requires bandwidth:
-      K(x, y) = exp(-(|| x - y || ^ 2) / (2 * (bandwidth ^ 2)))
+      `K(x, y) = exp(-(|| x - y || ^ 2) / (2 * (bandwidth ^ 2)))`
   
    * 'polynomial': polynomial kernel; requires offset and degree:
-      K(x, y) = (x^T y + offset) ^ degree
+      `K(x, y) = (x^T y + offset) ^ degree`
   
    * 'hyptan': hyperbolic tangent kernel; requires scale and offset:
-      K(x, y) = tanh(scale * (x^T y) + offset)
+      `K(x, y) = tanh(scale * (x^T y) + offset)`
   
    * 'laplacian': Laplacian kernel; requires bandwidth:
-      K(x, y) = exp(-(|| x - y ||) / bandwidth)
+      `K(x, y) = exp(-(|| x - y ||) / bandwidth)`
   
    * 'epanechnikov': Epanechnikov kernel; requires bandwidth:
-      K(x, y) = max(0, 1 - || x - y ||^2 / bandwidth^2)
+      `K(x, y) = max(0, 1 - || x - y ||^2 / bandwidth^2)`
   
    * 'cosine': cosine distance:
-      K(x, y) = 1 - (x^T y) / (|| x || * || y ||)
+      `K(x, y) = 1 - (x^T y) / (|| x || * || y ||)`
   
   The parameters for each of the kernels should be specified with the options
   "Bandwidth", "KernelScale", "Offset", or "Degree" (or a combination of those

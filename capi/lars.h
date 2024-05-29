@@ -20,12 +20,12 @@ extern void mlpackLars(void* params, void* timers);
 // Any definitions of methods for dealing with model pointers will be put below
 // this comment, if needed.
 
-// Set the pointer to a LARS parameter.
+// Set the pointer to a LARS<> parameter.
 extern void mlpackSetLARSPtr(void* params,
                                            const char* identifier,
                                            void* value);
 
-// Get the pointer to a LARS parameter.
+// Get the pointer to a LARS<> parameter.
 extern void* mlpackGetLARSPtr(void* params,
                                             const char* identifier);
 

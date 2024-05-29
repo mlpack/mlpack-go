@@ -53,8 +53,8 @@ func RandomForestOptions() *RandomForestOptionalParam {
   for points may be generated.
   
   The training set and associated labels are specified with the "Training" and
-  "Labels" parameters, respectively.  The labels should be in the range [0,
-  num_classes - 1]. Optionally, if "Labels" is not specified, the labels are
+  "Labels" parameters, respectively.  The labels should be in the range `[0,
+  num_classes - 1]`. Optionally, if "Labels" is not specified, the labels are
   assumed to be the last dimension of the training dataset.
   
   When a model is trained, the "OutputModel" output parameter may be used to

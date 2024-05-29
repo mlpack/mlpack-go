@@ -17,7 +17,6 @@ type DecisionTreeOptionalParam struct {
     MinimumGainSplit float64
     MinimumLeafSize int
     PrintTrainingAccuracy bool
-    PrintTrainingError bool
     Test *matrixWithInfo
     TestLabels *mat.Dense
     Training *matrixWithInfo
@@ -33,7 +32,6 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
     MinimumGainSplit: 1e-07,
     MinimumLeafSize: 20,
     PrintTrainingAccuracy: false,
-    PrintTrainingError: false,
     Test: nil,
     TestLabels: nil,
     Training: nil,
@@ -48,8 +46,8 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
   this program can train a decision tree on that data.
   
   The training set and associated labels are specified with the "Training" and
-  "Labels" parameters, respectively.  The labels should be in the range [0,
-  num_classes - 1]. Optionally, if "Labels" is not specified, the labels are
+  "Labels" parameters, respectively.  The labels should be in the range `[0,
+  num_classes - 1]`. Optionally, if "Labels" is not specified, the labels are
   assumed to be the last dimension of the training dataset.
   
   When a model is trained, the "OutputModel" output parameter may be used to
@@ -59,8 +57,8 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
   specifies the minimum number of training points that must fall into each leaf
   for it to be split.  The "MinimumGainSplit" parameter specifies the minimum
   gain that is needed for the node to split.  The "MaximumDepth" parameter
-  specifies the maximum depth of the tree.  If "PrintTrainingError" is
-  specified, the training error will be printed.
+  specifies the maximum depth of the tree.  If "PrintTrainingAccuracy" is
+  specified, the training accuracy will be printed.
   
   Test data may be specified with the "Test" parameter, and if performance
   numbers are desired for that test set, labels may be specified with the
@@ -106,8 +104,6 @@ func DecisionTreeOptions() *DecisionTreeOptionalParam {
    - MinimumLeafSize (int): Minimum number of points in a leaf.  Default
         value 20.
    - PrintTrainingAccuracy (bool): Print the training accuracy.
-   - PrintTrainingError (bool): Print the training error (deprecated; will
-        be removed in mlpack 4.0.0).
    - Test (matrixWithInfo): Testing dataset (may be categorical).
    - TestLabels (mat.Dense): Test point labels, if accuracy calculation is
         desired.
@@ -163,12 +159,6 @@ func DecisionTree(param *DecisionTreeOptionalParam) (decisionTreeModel, *mat.Den
   if param.PrintTrainingAccuracy != false {
     setParamBool(params, "print_training_accuracy", param.PrintTrainingAccuracy)
     setPassed(params, "print_training_accuracy")
-  }
-
-  // Detect if the parameter was passed; set if so.
-  if param.PrintTrainingError != false {
-    setParamBool(params, "print_training_error", param.PrintTrainingError)
-    setPassed(params, "print_training_error")
   }
 
   // Detect if the parameter was passed; set if so.

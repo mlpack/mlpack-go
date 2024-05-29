@@ -18,6 +18,7 @@ type LogisticRegressionOptionalParam struct {
     Lambda float64
     MaxIterations int
     Optimizer string
+    PrintTrainingAccuracy bool
     StepSize float64
     Test *mat.Dense
     Tolerance float64
@@ -34,6 +35,7 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
     Lambda: 0,
     MaxIterations: 10000,
     Optimizer: "lbfgs",
+    PrintTrainingAccuracy: false,
     StepSize: 0.01,
     Test: nil,
     Tolerance: 1e-10,
@@ -100,6 +102,7 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
   param.Training = data
   param.Labels = labels
   param.Lambda = 0.1
+  param.PrintTrainingAccuracy = true
   
   lr_model, _, _ := mlpack.LogisticRegression(param)
   
@@ -128,6 +131,8 @@ func LogisticRegressionOptions() *LogisticRegressionOptionalParam {
         limit).  Default value 10000.
    - Optimizer (string): Optimizer to use for training ('lbfgs' or 'sgd').
          Default value 'lbfgs'.
+   - PrintTrainingAccuracy (bool): If set, then the accuracy of the model
+        on the training set will be printed (verbose must also be specified).
    - StepSize (float64): Step size for SGD optimizer.  Default value
         0.01.
    - Test (mat.Dense): Matrix containing test dataset.
@@ -194,6 +199,12 @@ func LogisticRegression(param *LogisticRegressionOptionalParam) (logisticRegress
   if param.Optimizer != "lbfgs" {
     setParamString(params, "optimizer", param.Optimizer)
     setPassed(params, "optimizer")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.PrintTrainingAccuracy != false {
+    setParamBool(params, "print_training_accuracy", param.PrintTrainingAccuracy)
+    setPassed(params, "print_training_accuracy")
   }
 
   // Detect if the parameter was passed; set if so.
