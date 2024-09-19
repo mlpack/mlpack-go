@@ -22,12 +22,12 @@ type LmnnOptionalParam struct {
     Optimizer string
     Passes int
     PrintAccuracy bool
-    Range int
     Rank int
     Regularization float64
     Seed int
     StepSize float64
     Tolerance float64
+    UpdateInterval int
     Verbose bool
 }
 
@@ -44,12 +44,12 @@ func LmnnOptions() *LmnnOptionalParam {
     Optimizer: "amsgrad",
     Passes: 50,
     PrintAccuracy: false,
-    Range: 1,
     Rank: 0,
     Regularization: 0.5,
     Seed: 0,
     StepSize: 0.01,
     Tolerance: 1e-07,
+    UpdateInterval: 1,
     Verbose: false,
   }
 }
@@ -75,7 +75,8 @@ func LmnnOptions() *LmnnOptionalParam {
   with "K"), A regularization parameter can also be passed, It acts as a trade
   of between the pulling and pushing terms (specified with "Regularization"), In
   addition, this implementation of LMNN includes a parameter to decide the
-  interval after which impostors must be re-calculated (specified with "Range").
+  interval after which impostors must be re-calculated (specified with
+  "UpdateInterval").
   
   Output can either be the learned distance matrix (specified with "Output"), or
   the transformed dataset  (specified with "TransformedData"), or both.
@@ -131,13 +132,13 @@ func LmnnOptions() *LmnnOptionalParam {
   
   _, output, _ := mlpack.Lmnn(iris, param)
   
-  An another program call making use of range & regularization parameter with
-  dataset having labels as last column can be made as: 
+  Another program call making use of update interval & regularization parameter
+  with dataset having labels as last column can be made as: 
   
   // Initialize optional parameters for Lmnn().
   param := mlpack.LmnnOptions()
   param.K = 5
-  param.Range = 10
+  param.UpdateInterval = 10
   param.Regularization = 0.4
   
   _, output, _ := mlpack.Lmnn(letter_recognition, param)
@@ -166,8 +167,6 @@ func LmnnOptions() *LmnnOptionalParam {
         BB_SGD and SGD.  Default value 50.
    - PrintAccuracy (bool): Print accuracies on initial and transformed
         dataset
-   - Range (int): Number of iterations after which impostors needs to be
-        recalculated  Default value 1.
    - Rank (int): Rank of distance matrix to be optimized.   Default value
         0.
    - Regularization (float64): Regularization for LMNN objective function 
@@ -178,6 +177,8 @@ func LmnnOptions() *LmnnOptionalParam {
         Default value 0.01.
    - Tolerance (float64): Maximum tolerance for termination of AMSGrad,
         BB_SGD, SGD or L-BFGS.  Default value 1e-07.
+   - UpdateInterval (int): Number of iterations after which impostors need
+        to be recalculated.  Default value 1.
    - Verbose (bool): Display informational messages and the full list of
         parameters and timers at the end of execution.
 
@@ -265,12 +266,6 @@ func Lmnn(input *mat.Dense, param *LmnnOptionalParam) (*mat.Dense, *mat.Dense, *
   }
 
   // Detect if the parameter was passed; set if so.
-  if param.Range != 1 {
-    setParamInt(params, "range", param.Range)
-    setPassed(params, "range")
-  }
-
-  // Detect if the parameter was passed; set if so.
   if param.Rank != 0 {
     setParamInt(params, "rank", param.Rank)
     setPassed(params, "rank")
@@ -298,6 +293,12 @@ func Lmnn(input *mat.Dense, param *LmnnOptionalParam) (*mat.Dense, *mat.Dense, *
   if param.Tolerance != 1e-07 {
     setParamDouble(params, "tolerance", param.Tolerance)
     setPassed(params, "tolerance")
+  }
+
+  // Detect if the parameter was passed; set if so.
+  if param.UpdateInterval != 1 {
+    setParamInt(params, "update_interval", param.UpdateInterval)
+    setPassed(params, "update_interval")
   }
 
   // Detect if the parameter was passed; set if so.
