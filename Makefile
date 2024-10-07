@@ -79,6 +79,7 @@ download:
 build:
 	cd $(TMP_DIR)mlpack/mlpack-$(MLPACK_VERSION) && mkdir build && cd build && \
 	cmake -D BUILD_TESTS=ON            \
+	      -D DOWNLOAD_DEPENDENCIES=ON  \
 	      -D BUILD_JULIA_BINDINGS=OFF  \
 	      -D BUILD_PYTHON_BINDINGS=OFF \
 	      -D BUILD_CLI_EXECUTABLES=OFF \
