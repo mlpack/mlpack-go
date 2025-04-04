@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_hmm_loglik
 #include <capi/hmm_loglik.h>
 #include <stdlib.h>

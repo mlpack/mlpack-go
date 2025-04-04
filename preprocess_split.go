@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_preprocess_split
 #include <capi/preprocess_split.h>
 #include <stdlib.h>

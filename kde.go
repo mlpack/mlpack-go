@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_kde
 #include <capi/kde.h>
 #include <stdlib.h>

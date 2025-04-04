@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_nmf
 #include <capi/nmf.h>
 #include <stdlib.h>

@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_bayesian_linear_regression
 #include <capi/bayesian_linear_regression.h>
 #include <stdlib.h>

@@ -1,7 +1,7 @@
 package mlpack
 
 /*
-#cgo CFLAGS: -I./capi -Wall
+#cgo CFLAGS: -I./capi
 #cgo LDFLAGS: -L. -lmlpack_go_local_coordinate_coding
 #include <capi/local_coordinate_coding.h>
 #include <stdlib.h>
