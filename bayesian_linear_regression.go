@@ -33,7 +33,7 @@ func BayesianLinearRegressionOptions() *BayesianLinearRegressionOptionalParam {
 }
 
 /*
-  An implementation of the bayesian linear regression.
+  An implementation of the Bayesian linear regression.
   This model is a probabilistic view and implementation of the linear
   regression. The final solution is obtained by computing a posterior
   distribution from gaussian likelihood and a zero mean gaussian isotropic 

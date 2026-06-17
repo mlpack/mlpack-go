@@ -2,9 +2,7 @@ package mlpack
 
 /*
 #include <capi/approx_kfn.h>
-#include <capi/bayesian_linear_regression.h>
 #include <capi/cf.h>
-#include <capi/decision_tree.h>
 #include <capi/det.h>
 #include <capi/fastmks.h>
 #include <capi/gmm_train.h>
@@ -16,6 +14,7 @@ package mlpack
 #include <capi/hmm_viterbi.h>
 #include <capi/hoeffding_tree.h>
 #include <capi/kde.h>
+#include <capi/bayesian_linear_regression.h>
 #include <capi/lars.h>
 #include <capi/linear_svm.h>
 #include <capi/local_coordinate_coding.h>
@@ -26,10 +25,11 @@ package mlpack
 #include <capi/kfn.h>
 #include <capi/perceptron.h>
 #include <capi/preprocess_scale.h>
-#include <capi/random_forest.h>
 #include <capi/krann.h>
 #include <capi/softmax_regression.h>
 #include <capi/sparse_coding.h>
+#include <capi/random_forest.h>
+#include <capi/decision_tree.h>
 #include <capi/adaboost.h>
 #include <capi/linear_regression.h>
 */
@@ -61,27 +61,6 @@ func setApproxKFNModel(params* params,
       C.CString(identifier), ptr.mem)
 }
 
-type bayesianLinearRegression struct {
-  mem unsafe.Pointer 
-}
-
-func (m *bayesianLinearRegression) allocBayesianLinearRegression(params *params, identifier string) {
-  m.mem = C.mlpackGetBayesianLinearRegressionPtr(params.mem,
-      C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *bayesianLinearRegression) getBayesianLinearRegression(params *params, identifier string) {
-  m.allocBayesianLinearRegression(params, identifier)
-}
-
-func setBayesianLinearRegression(params* params,
-                           identifier string,
-                           ptr *bayesianLinearRegression) {
-  C.mlpackSetBayesianLinearRegressionPtr(params.mem,
-      C.CString(identifier), ptr.mem)
-}
-
 type cfModel struct {
   mem unsafe.Pointer 
 }
@@ -100,27 +79,6 @@ func setCFModel(params* params,
                            identifier string,
                            ptr *cfModel) {
   C.mlpackSetCFModelPtr(params.mem,
-      C.CString(identifier), ptr.mem)
-}
-
-type decisionTreeModel struct {
-  mem unsafe.Pointer 
-}
-
-func (m *decisionTreeModel) allocDecisionTreeModel(params *params, identifier string) {
-  m.mem = C.mlpackGetDecisionTreeModelPtr(params.mem,
-      C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *decisionTreeModel) getDecisionTreeModel(params *params, identifier string) {
-  m.allocDecisionTreeModel(params, identifier)
-}
-
-func setDecisionTreeModel(params* params,
-                           identifier string,
-                           ptr *decisionTreeModel) {
-  C.mlpackSetDecisionTreeModelPtr(params.mem,
       C.CString(identifier), ptr.mem)
 }
 
@@ -247,6 +205,27 @@ func setKDEModel(params* params,
                            identifier string,
                            ptr *kdeModel) {
   C.mlpackSetKDEModelPtr(params.mem,
+      C.CString(identifier), ptr.mem)
+}
+
+type bayesianLinearRegression struct {
+  mem unsafe.Pointer 
+}
+
+func (m *bayesianLinearRegression) allocBayesianLinearRegression(params *params, identifier string) {
+  m.mem = C.mlpackGetBayesianLinearRegressionPtr(params.mem,
+      C.CString(identifier))
+  runtime.KeepAlive(m)
+}
+
+func (m *bayesianLinearRegression) getBayesianLinearRegression(params *params, identifier string) {
+  m.allocBayesianLinearRegression(params, identifier)
+}
+
+func setBayesianLinearRegression(params* params,
+                           identifier string,
+                           ptr *bayesianLinearRegression) {
+  C.mlpackSetBayesianLinearRegressionPtr(params.mem,
       C.CString(identifier), ptr.mem)
 }
 
@@ -460,27 +439,6 @@ func setScalingModel(params* params,
       C.CString(identifier), ptr.mem)
 }
 
-type randomForestModel struct {
-  mem unsafe.Pointer 
-}
-
-func (m *randomForestModel) allocRandomForestModel(params *params, identifier string) {
-  m.mem = C.mlpackGetRandomForestModelPtr(params.mem,
-      C.CString(identifier))
-  runtime.KeepAlive(m)
-}
-
-func (m *randomForestModel) getRandomForestModel(params *params, identifier string) {
-  m.allocRandomForestModel(params, identifier)
-}
-
-func setRandomForestModel(params* params,
-                           identifier string,
-                           ptr *randomForestModel) {
-  C.mlpackSetRandomForestModelPtr(params.mem,
-      C.CString(identifier), ptr.mem)
-}
-
 type raModel struct {
   mem unsafe.Pointer 
 }
@@ -541,6 +499,48 @@ func setSparseCoding(params* params,
                            identifier string,
                            ptr *sparseCoding) {
   C.mlpackSetSparseCodingPtr(params.mem,
+      C.CString(identifier), ptr.mem)
+}
+
+type randomForestModel struct {
+  mem unsafe.Pointer 
+}
+
+func (m *randomForestModel) allocRandomForestModel(params *params, identifier string) {
+  m.mem = C.mlpackGetRandomForestModelPtr(params.mem,
+      C.CString(identifier))
+  runtime.KeepAlive(m)
+}
+
+func (m *randomForestModel) getRandomForestModel(params *params, identifier string) {
+  m.allocRandomForestModel(params, identifier)
+}
+
+func setRandomForestModel(params* params,
+                           identifier string,
+                           ptr *randomForestModel) {
+  C.mlpackSetRandomForestModelPtr(params.mem,
+      C.CString(identifier), ptr.mem)
+}
+
+type decisionTreeModel struct {
+  mem unsafe.Pointer 
+}
+
+func (m *decisionTreeModel) allocDecisionTreeModel(params *params, identifier string) {
+  m.mem = C.mlpackGetDecisionTreeModelPtr(params.mem,
+      C.CString(identifier))
+  runtime.KeepAlive(m)
+}
+
+func (m *decisionTreeModel) getDecisionTreeModel(params *params, identifier string) {
+  m.allocDecisionTreeModel(params, identifier)
+}
+
+func setDecisionTreeModel(params* params,
+                           identifier string,
+                           ptr *decisionTreeModel) {
+  C.mlpackSetDecisionTreeModelPtr(params.mem,
       C.CString(identifier), ptr.mem)
 }
 

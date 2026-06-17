@@ -2,7 +2,7 @@
 .PHONY: test deps download build clean docker
 
 # mlpack version to use.
-MLPACK_VERSION?=4.7.0
+MLPACK_VERSION?=4.8.0
 
 # armadillo version to use.
 ARMA_VERSION?=10.8.2
